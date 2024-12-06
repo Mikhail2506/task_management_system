@@ -1,10 +1,11 @@
 package by.toukachmikhail.taskmanagementsystem.services.impl;
 
 import by.toukachmikhail.taskmanagementsystem.dto.TaskDto;
+import by.toukachmikhail.taskmanagementsystem.entities.Task;
+import by.toukachmikhail.taskmanagementsystem.mappers.TaskMapper;
 import by.toukachmikhail.taskmanagementsystem.repositories.TaskRepository;
 import by.toukachmikhail.taskmanagementsystem.services.TaskManagementService;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,6 +18,8 @@ import org.springframework.stereotype.Service;
 public class TaskManagementServiceImpl implements TaskManagementService {
 
   private final TaskRepository taskRepository;
+  private final TaskMapper taskMapper;
+
   /**
    * @return
    */
@@ -24,7 +27,9 @@ public class TaskManagementServiceImpl implements TaskManagementService {
   public Page<TaskDto> getAllTasks(int page, int size, String sortBy, String direction) {
     Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
     Pageable pageable = PageRequest.of(page, size, sort);
-    return taskRepository.findAll(pageable);
+    Page<Task> allTasks = taskRepository.findAll(pageable);
+
+    return allTasks.map(taskMapper::entityToDto);
   }
 
   /**
@@ -32,12 +37,12 @@ public class TaskManagementServiceImpl implements TaskManagementService {
    * @return
    */
   @Override
-  public Optional<TaskDto> getTask(Long taskId) {
+  public TaskDto getTask(Long taskId) {
 
-    TaskDto taskDto = taskRepository.findById(taskId).orElseThrow(
+    Task task = taskRepository.findById(taskId).orElseThrow(
         () -> new NoSuchElementException(String.format("Задание с taskId '%s' не найдено ", taskId)));
 
-    return Optional.ofNullable(taskDto);
+    return taskMapper.entityToDto(task);
   }
 
   /**

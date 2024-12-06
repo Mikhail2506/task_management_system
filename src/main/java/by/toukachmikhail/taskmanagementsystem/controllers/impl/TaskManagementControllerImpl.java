@@ -4,7 +4,6 @@ import by.toukachmikhail.taskmanagementsystem.controllers.TaskManagementControll
 import by.toukachmikhail.taskmanagementsystem.dto.TaskDto;
 import by.toukachmikhail.taskmanagementsystem.services.TaskManagementService;
 import by.toukachmikhail.taskmanagementsystem.services.impl.TaskManagementServiceImpl;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -21,11 +20,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/task-management/tasks")
+@RequestMapping("/api/v1/task-management")
 @RequiredArgsConstructor
 public class TaskManagementControllerImpl implements TaskManagementController {
 
-  private final TaskManagementServiceImpl taskManagementService;
+  private final TaskManagementService taskManagementService;
 
   @Override
   @GetMapping("/tasks")
@@ -41,9 +40,9 @@ public class TaskManagementControllerImpl implements TaskManagementController {
 
   @Override
   @GetMapping("/tasks/{task_id}")
-  public ResponseEntity<Optional<TaskDto>> showSingleTask(@PathVariable("task_id") Long taskId) {
+  public ResponseEntity<TaskDto> showSingleTask(@PathVariable("task_id") Long taskId) {
 
-    Optional<TaskDto> taskDto = taskManagementService.getTask(taskId);
+    TaskDto taskDto = taskManagementService.getTask(taskId);
 
     return ResponseEntity.ok()
         .contentType(MediaType.APPLICATION_JSON)

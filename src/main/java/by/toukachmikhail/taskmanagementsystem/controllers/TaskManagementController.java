@@ -1,7 +1,6 @@
 package by.toukachmikhail.taskmanagementsystem.controllers;
 
 import by.toukachmikhail.taskmanagementsystem.dto.TaskDto;
-import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +22,7 @@ public interface TaskManagementController {
       @RequestParam(defaultValue = "asc") String direction);
 
   @GetMapping("/tasks/{task_id}")
-  ResponseEntity<Optional<TaskDto>> showSingleTask(@PathVariable("task_id") Long taskId);
+  ResponseEntity<TaskDto> showSingleTask(@PathVariable("task_id") Long taskId);
 
   @PostMapping("/tasks")
   ResponseEntity<HttpStatus> addNewTask(@RequestBody TaskDto taskDto);
