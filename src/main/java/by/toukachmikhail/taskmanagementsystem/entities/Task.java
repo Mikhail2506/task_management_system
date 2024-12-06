@@ -9,7 +9,9 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -41,17 +43,18 @@ public class Task {
   private String header;
 
   @NonNull
-  @Column(columnDefinition = "VARCHAR(30)", nullable = false)
+  @Column(columnDefinition = "VARCHAR(255)", nullable = false)
   private String description;
 
-  @Enumerated(EnumType.STRING)
-  @Column(nullable = false, columnDefinition = "VARCHAR(30)")
-  private TaskStatus status;
-
+  @OneToOne
   @NonNull
-  @Enumerated(EnumType.STRING)
-  @Column(columnDefinition = "VARCHAR(30)")
-  private TaskPriority taskPriority;
+  @JoinColumn(name = "status_id", referencedColumnName = "status_id")
+  private TasksStatuses status;
+
+  @OneToOne
+  @NonNull
+  @JoinColumn(name = "task_priority_id", referencedColumnName = "priority_id")
+  private TasksPriorities taskPriority;
 
   @ManyToMany(mappedBy = "tasks")
   private List<User> users = new ArrayList<>();;

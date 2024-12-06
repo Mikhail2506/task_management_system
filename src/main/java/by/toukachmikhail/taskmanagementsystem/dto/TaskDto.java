@@ -9,8 +9,8 @@ public record TaskDto(
     String description,
     String status,
     String priority,
-    List<UserDto> userDtoList,
-    String comment
-) {
+    List<UserDto> usersDto,
+    String comment,
+    Long taskId) {
 
 }

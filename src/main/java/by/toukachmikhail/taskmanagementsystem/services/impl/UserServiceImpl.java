@@ -1,10 +1,13 @@
 package by.toukachmikhail.taskmanagementsystem.services.impl;
 
-import by.toukachmikhail.taskmanagementsystem.dto.TaskDto;
 import by.toukachmikhail.taskmanagementsystem.dto.UserDto;
+import by.toukachmikhail.taskmanagementsystem.entities.User;
+import by.toukachmikhail.taskmanagementsystem.mappers.UserMapper;
 import by.toukachmikhail.taskmanagementsystem.repositories.UserRepository;
 import by.toukachmikhail.taskmanagementsystem.services.UserService;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,53 +16,55 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
 
   private final UserRepository userRepository;
+  private final UserMapper userMapper;
 
   /**
    * @return
    */
   @Override
   public List<UserDto> getAllUsers() {
-    return List.of();
+    List<User> users = userRepository.findAll();
+    return userMapper.toDtoList(Set.copyOf(users));
   }
 
   /**
-   * @param taskId
+   * @param userId
    * @return
    */
   @Override
-  public UserDto getUser(Long taskId) {
-    return null;
+  public Optional<UserDto> getUserById(Long userId) {
+    return userRepository.findById(userId).map(userMapper::entityToDto);
   }
 
   /**
    * @param userDto
+   * @return
    */
   @Override
-  public void saveUser(UserDto userDto) {
-
+  public UserDto saveUser(UserDto userDto) {
+    User user = userMapper.dtoToEntity(userDto);
+    user = userRepository.save(user);
+    return userMapper.entityToDto(user);
   }
 
   /**
    * @param taskDto
    */
   @Override
-  public void correctUsersInfo(TaskDto taskDto) {
-
+  public Optional<UserDto> updateUser(Long userId, UserDto userDto) {
+    return userRepository.findById(userId).map(existingUser -> {
+      User updatedUser = userMapper.dtoToEntity(userDto);
+      updatedUser.setUserId(userId);
+      updatedUser = userRepository.save(updatedUser);
+      return userMapper.entityToDto(updatedUser);
+    });
   }
 
-  /**
-   *
-   */
-  @Override
-  public void deleteAllUsers() {
-
-  }
-
-  /**
+   /**
    * @param userId
    */
   @Override
   public void deleteUser(Long userId) {
-
+    userRepository.deleteById(userId);
   }
 }

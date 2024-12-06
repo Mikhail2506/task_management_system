@@ -1,7 +1,10 @@
 package by.toukachmikhail.taskmanagementsystem.entities;
 
+import by.toukachmikhail.taskmanagementsystem.enums.Role;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -28,6 +31,7 @@ public class UsersRoles {
   private Long roleId;
 
   @NonNull
-  @Column(columnDefinition = "VARCHAR(10)")
-  private String usersRole;
+  @Column(columnDefinition = "VARCHAR(10)", name = "user_role")
+  @Enumerated(EnumType.STRING)
+  private Role usersRole;
 }

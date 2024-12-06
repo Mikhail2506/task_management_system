@@ -10,25 +10,23 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-public interface UserTaskController {
+public interface UserController {
 
-  @GetMapping("/")
-  ResponseEntity<List<UserDto>> showAllUsers();
+  @GetMapping()
+  ResponseEntity<List<UserDto>> getAllUsers();
 
   @GetMapping("/{user_id}")
-  ResponseEntity<UserDto> showSingleUser(@PathVariable("user_id") Long taskId);
+  ResponseEntity<UserDto> getUserById(@PathVariable("user_id") Long userId);
 
-  @PostMapping()
-  ResponseEntity<HttpStatus> addNewTask(@RequestBody UserDto userDto);
+  @PostMapping
+  ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto);
 
-  @PatchMapping("/")
-  ResponseEntity<HttpStatus> updateTask(@RequestBody TaskDto taskDto);
+  @PutMapping("/{userId}")
+  ResponseEntity<UserDto> updateUser(@PathVariable Long userId, @RequestBody UserDto userDto);
 
-  @DeleteMapping()
-  ResponseEntity<HttpStatus> removeAllTasks();
-
-  @DeleteMapping("/{user_id}")
-  ResponseEntity<HttpStatus> updateTask(@PathVariable("user_id") Long userId);
+  @DeleteMapping("/{userId}")
+  ResponseEntity<Void> deleteUser(@PathVariable Long userId);
 }

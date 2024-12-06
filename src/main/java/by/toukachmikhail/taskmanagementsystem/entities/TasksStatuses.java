@@ -1,7 +1,10 @@
 package by.toukachmikhail.taskmanagementsystem.entities;
 
+import by.toukachmikhail.taskmanagementsystem.enums.TaskStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -29,5 +32,6 @@ public class TasksStatuses {
 
   @NonNull
   @Column(columnDefinition = "VARCHAR(20)")
-  private String status;
+  @Enumerated(EnumType.STRING)
+  private TaskStatus status;
 }

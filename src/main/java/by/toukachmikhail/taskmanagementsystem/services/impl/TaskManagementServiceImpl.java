@@ -5,7 +5,7 @@ import by.toukachmikhail.taskmanagementsystem.entities.Task;
 import by.toukachmikhail.taskmanagementsystem.mappers.TaskMapper;
 import by.toukachmikhail.taskmanagementsystem.repositories.TaskRepository;
 import by.toukachmikhail.taskmanagementsystem.services.TaskManagementService;
-import java.util.NoSuchElementException;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -37,11 +37,19 @@ public class TaskManagementServiceImpl implements TaskManagementService {
    * @return
    */
   @Override
-  public TaskDto getTask(Long taskId) {
+  public Optional<TaskDto> getTask(Long taskId) {
 
-    Task task = taskRepository.findById(taskId).orElseThrow(
-        () -> new NoSuchElementException(String.format("Задание с taskId '%s' не найдено ", taskId)));
+    return taskRepository.findById(taskId).map(taskMapper::entityToDto);
+  }
 
+  /**
+   * @param taskDto
+   * @return
+   */
+  @Override
+  public TaskDto saveTask(TaskDto taskDto) {
+    Task task = taskMapper.dtoToEntity(taskDto);
+    task = taskRepository.save(task);
     return taskMapper.entityToDto(task);
   }
 
@@ -49,32 +57,21 @@ public class TaskManagementServiceImpl implements TaskManagementService {
    * @param taskDto
    */
   @Override
-  public void saveTask(TaskDto taskDto) {
-
-  }
-
-  /**
-   * @param taskDto
-   */
-  @Override
-  public void correctTask(TaskDto taskDto) {
-
-  }
-
-  /**
-   *
-   */
-  @Override
-  public void deleteAllTasks() {
-
+  public Optional<TaskDto> updateTask(Long taskId, TaskDto taskDto) {
+    return taskRepository.findById(taskId).map(existingTask -> {
+      Task updatedTask = taskMapper.dtoToEntity(taskDto);
+      updatedTask.setTaskId(taskId);
+      updatedTask = taskRepository.save(updatedTask);
+      return taskMapper.entityToDto(updatedTask);
+    });
   }
 
   /**
    * @param taskId
    */
   @Override
-  public void deleteSingleTask(Long taskId) {
-
+  public void deleteTask(Long taskId) {
+    taskRepository.deleteById(taskId);
   }
 
 }

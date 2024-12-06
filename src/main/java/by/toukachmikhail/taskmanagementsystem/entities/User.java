@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.HashSet;
 import java.util.Set;
@@ -30,7 +31,6 @@ import lombok.Setter;
 @Builder
 public class User {
 
-
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "user_id")
@@ -39,10 +39,9 @@ public class User {
   @Column(name = "user_name", columnDefinition = "VARCHAR(30)", nullable = false)
   private String username;
 
-  @Column(name = "user_role", columnDefinition = "VARCHAR(10)", nullable = false)
-  @Enumerated(EnumType.STRING)
-  private Role role;
-
+  @OneToOne
+  @JoinColumn(name = "user_role_id", referencedColumnName = "role_id", nullable = false)
+  private UsersRoles role;
 
   @Column(name = "user_phone_number", columnDefinition = "VARCHAR(30)", nullable = false)
   private String usersPhoneNumber;
