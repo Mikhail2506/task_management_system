@@ -1,38 +1,33 @@
 package by.toukachmikhail.taskmanagementsystem.mappers;
 
-import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
-
 import by.toukachmikhail.taskmanagementsystem.dto.UserDto;
 import by.toukachmikhail.taskmanagementsystem.entities.User;
+import by.toukachmikhail.taskmanagementsystem.entities.UsersRoles;
 import by.toukachmikhail.taskmanagementsystem.enums.Role;
-import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.ReportingPolicy;
-import org.springframework.context.annotation.Lazy;
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE,
-    componentModel = SPRING,
-    //uses = {TaskMapper.class},
-    imports = {Role.class})
 @RequiredArgsConstructor
-public abstract class UserMapper {
+public class UserMapper {
 
-  @Lazy
-  protected TaskMapper taskMapper;
 
-  @Mapping(source = "role.usersRole", target = "role")
-  @Mapping(source = "tasks", target = "tasksDto")
-  public  abstract UserDto entityToDto(User user);
+  public static UserDto entityToDto(User user) {
+    return UserDto.builder()
+        .username(user.getUsername())
+        .role(user.getRole().getUsersRole().name())
+        .usersPhoneNumber(user.getUsersPhoneNumber())
+        .tasksDto(user.getTasks().stream().map(TaskMapper::entityToDto).collect(Collectors.toSet()))
+        .build();
+  }
 
-  @Mapping(source = "role", target = "role.usersRole")
-  @Mapping(source = "tasksDto", target = "tasks")
-  public  abstract User dtoToEntity(UserDto userDto);
-
-  public  abstract List<UserDto> toDtoList(Set<User> users);
-
-  public  abstract Set<User> toEntitySet(List<UserDto> userDtos);
-
+  public static User dtoToEntity(UserDto userDto) {
+    return User.builder()
+        .username(userDto.username())
+        .role(UsersRoles.builder().usersRole(Role.valueOf(userDto.role())).build())
+        .usersPhoneNumber(userDto.usersPhoneNumber())
+        .tasks(userDto.tasksDto().stream().map(TaskMapper::dtoToEntity).collect(Collectors.toSet()))
+        .build();
+  }
 }
+

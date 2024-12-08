@@ -5,12 +5,13 @@ import lombok.Builder;
 
 @Builder
 public record TaskDto(
+    Long taskId,
     String header,
     String description,
     String status,
     String priority,
     List<UserDto> usersDto,
-    String comment,
-    Long taskId) {
+    String comment
+    ) {
 
 }

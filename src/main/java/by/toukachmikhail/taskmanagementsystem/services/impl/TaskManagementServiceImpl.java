@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 public class TaskManagementServiceImpl implements TaskManagementService {
 
   private final TaskRepository taskRepository;
-  private final TaskMapper taskMapper;
 
   /**
    * @return
@@ -29,7 +28,7 @@ public class TaskManagementServiceImpl implements TaskManagementService {
     Pageable pageable = PageRequest.of(page, size, sort);
     Page<Task> allTasks = taskRepository.findAll(pageable);
 
-    return allTasks.map(taskMapper::entityToDto);
+    return allTasks.map(TaskMapper::entityToDto);
   }
 
   /**
@@ -39,7 +38,7 @@ public class TaskManagementServiceImpl implements TaskManagementService {
   @Override
   public Optional<TaskDto> getTask(Long taskId) {
 
-    return taskRepository.findById(taskId).map(taskMapper::entityToDto);
+    return taskRepository.findById(taskId).map(TaskMapper::entityToDto);
   }
 
   /**
@@ -48,9 +47,9 @@ public class TaskManagementServiceImpl implements TaskManagementService {
    */
   @Override
   public TaskDto saveTask(TaskDto taskDto) {
-    Task task = taskMapper.dtoToEntity(taskDto);
+    Task task = TaskMapper.dtoToEntity(taskDto);
     task = taskRepository.save(task);
-    return taskMapper.entityToDto(task);
+    return TaskMapper.entityToDto(task);
   }
 
   /**
@@ -59,10 +58,10 @@ public class TaskManagementServiceImpl implements TaskManagementService {
   @Override
   public Optional<TaskDto> updateTask(Long taskId, TaskDto taskDto) {
     return taskRepository.findById(taskId).map(existingTask -> {
-      Task updatedTask = taskMapper.dtoToEntity(taskDto);
+      Task updatedTask = TaskMapper.dtoToEntity(taskDto);
       updatedTask.setTaskId(taskId);
       updatedTask = taskRepository.save(updatedTask);
-      return taskMapper.entityToDto(updatedTask);
+      return TaskMapper.entityToDto(updatedTask);
     });
   }
 

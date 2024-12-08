@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
 
   private final UserRepository userRepository;
-  private final UserMapper userMapper;
 
   /**
    * @return
@@ -24,7 +23,7 @@ public class UserServiceImpl implements UserService {
   @Override
   public List<UserDto> getAllUsers() {
     List<User> users = userRepository.findAll();
-    return userMapper.toDtoList(Set.copyOf(users));
+    return users.stream().map(UserMapper::entityToDto).toList();
   }
 
   /**
@@ -33,7 +32,7 @@ public class UserServiceImpl implements UserService {
    */
   @Override
   public Optional<UserDto> getUserById(Long userId) {
-    return userRepository.findById(userId).map(userMapper::entityToDto);
+    return userRepository.findById(userId).map(UserMapper::entityToDto);
   }
 
   /**
@@ -42,21 +41,21 @@ public class UserServiceImpl implements UserService {
    */
   @Override
   public UserDto saveUser(UserDto userDto) {
-    User user = userMapper.dtoToEntity(userDto);
+    User user = UserMapper.dtoToEntity(userDto);
     user = userRepository.save(user);
-    return userMapper.entityToDto(user);
+    return UserMapper.entityToDto(user);
   }
 
   /**
-   * @param taskDto
+   * @param userDto
    */
   @Override
   public Optional<UserDto> updateUser(Long userId, UserDto userDto) {
     return userRepository.findById(userId).map(existingUser -> {
-      User updatedUser = userMapper.dtoToEntity(userDto);
+      User updatedUser = UserMapper.dtoToEntity(userDto);
       updatedUser.setUserId(userId);
       updatedUser = userRepository.save(updatedUser);
-      return userMapper.entityToDto(updatedUser);
+      return UserMapper.entityToDto(updatedUser);
     });
   }
 
