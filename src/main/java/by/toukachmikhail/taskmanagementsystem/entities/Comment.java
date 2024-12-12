@@ -1,37 +1,44 @@
 package by.toukachmikhail.taskmanagementsystem.entities;
 
-import by.toukachmikhail.taskmanagementsystem.enums.Role;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import lombok.Setter;
 
 @Entity
-@Table(name = "user_role")
+@Table(name = "comments")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UsersRoles {
+public class Comment {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "role_id")
-  private Long roleId;
+  @Column(name = "comment_id")
+  private Long id;
 
-  @NonNull
-  @Column(columnDefinition = "VARCHAR(10)", name = "user_role")
-  @Enumerated(EnumType.STRING)
-  private Role usersRole;
+  @Column(name = "comment_text")
+  @NotBlank
+  private String text;
+
+  @ManyToOne
+  @JoinColumn(name = "task_id")
+  private Task task;
+
+  @ManyToOne
+  @JoinColumn(name = "user_id")
+  private User user;
+
 }

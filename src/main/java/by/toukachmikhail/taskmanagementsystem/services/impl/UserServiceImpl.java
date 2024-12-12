@@ -1,21 +1,26 @@
 package by.toukachmikhail.taskmanagementsystem.services.impl;
 
+import static by.toukachmikhail.taskmanagementsystem.exception_handling.enums.NotFoundExceptionMessage.AUTHOR_NOT_FOUND;
+
 import by.toukachmikhail.taskmanagementsystem.dto.UserDto;
 import by.toukachmikhail.taskmanagementsystem.entities.User;
+import by.toukachmikhail.taskmanagementsystem.exception_handling.exception.NotFoundException;
 import by.toukachmikhail.taskmanagementsystem.mappers.UserMapper;
 import by.toukachmikhail.taskmanagementsystem.repositories.UserRepository;
 import by.toukachmikhail.taskmanagementsystem.services.UserService;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
   private final UserRepository userRepository;
+  private final UserMapper userMapper;
 
   /**
    * @return
@@ -23,7 +28,9 @@ public class UserServiceImpl implements UserService {
   @Override
   public List<UserDto> getAllUsers() {
     List<User> users = userRepository.findAll();
-    return users.stream().map(UserMapper::entityToDto).toList();
+    return users.stream()
+        .map(userMapper::entityToDto)
+        .collect(Collectors.toList());
   }
 
   /**
@@ -31,8 +38,16 @@ public class UserServiceImpl implements UserService {
    * @return
    */
   @Override
-  public Optional<UserDto> getUserById(Long userId) {
-    return userRepository.findById(userId).map(UserMapper::entityToDto);
+  public UserDto getUserById(Long userId) {
+
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new NotFoundException(AUTHOR_NOT_FOUND.getMessage()));
+
+    try {
+      return userMapper.entityToDto(user);
+    } catch (RuntimeException e) {
+      throw new NotFoundException(AUTHOR_NOT_FOUND.getMessage());
+    }
   }
 
   /**
@@ -41,9 +56,9 @@ public class UserServiceImpl implements UserService {
    */
   @Override
   public UserDto saveUser(UserDto userDto) {
-    User user = UserMapper.dtoToEntity(userDto);
+    User user = userMapper.dtoToEntity(userDto);
     user = userRepository.save(user);
-    return UserMapper.entityToDto(user);
+    return userMapper.entityToDto(user);
   }
 
   /**
@@ -52,14 +67,14 @@ public class UserServiceImpl implements UserService {
   @Override
   public Optional<UserDto> updateUser(Long userId, UserDto userDto) {
     return userRepository.findById(userId).map(existingUser -> {
-      User updatedUser = UserMapper.dtoToEntity(userDto);
-      updatedUser.setUserId(userId);
+      User updatedUser = userMapper.dtoToEntity(userDto);
+      updatedUser.setId(userId);
       updatedUser = userRepository.save(updatedUser);
-      return UserMapper.entityToDto(updatedUser);
+      return userMapper.entityToDto(updatedUser);
     });
   }
 
-   /**
+  /**
    * @param userId
    */
   @Override

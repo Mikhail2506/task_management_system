@@ -2,14 +2,15 @@ package by.toukachmikhail.taskmanagementsystem.controllers;
 
 import by.toukachmikhail.taskmanagementsystem.dto.ErrorResponseDTO;
 import by.toukachmikhail.taskmanagementsystem.dto.TaskDto;
-import by.toukachmikhail.taskmanagementsystem.dto.UserDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
+import jakarta.validation.Valid;
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,18 +18,19 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
-@Tag(name = "User controller",
-    description = "Controller to create, get, update and delete users")
-public interface UserController {
+@Tag(name = "Task management controller",
+    description = "Controller to create, show, update and delete tasks")
+public interface TaskController {
 
   @Operation(
-      summary = "Created (/open) broker account")
+      summary = "Find all tasks")
   @ApiResponses(
       value = {
           @ApiResponse(
               responseCode = "200",
-              description = "An application to open a broker account has successfully created",
+              description = "An application to show all tasks has successfully created",
               content = @Content(
                   mediaType = "application/json",
                   schema = @Schema(implementation = TaskDto.class))),
@@ -77,15 +79,19 @@ public interface UserController {
       }
   )
   @GetMapping()
-  ResponseEntity<List<UserDto>> getAllUsers();
+  ResponseEntity<Page<TaskDto>> getAllTasks(@RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size,
+      @RequestParam(defaultValue = "id") String sortBy,
+      @RequestParam(defaultValue = "asc") String direction);
+
 
   @Operation(
-      summary = "Created (/open) broker account")
+      summary = "Find task by id")
   @ApiResponses(
       value = {
           @ApiResponse(
               responseCode = "200",
-              description = "An application to open a broker account has successfully created",
+              description = "An application to find single task by id ended successfully",
               content = @Content(
                   mediaType = "application/json",
                   schema = @Schema(implementation = TaskDto.class))),
@@ -133,16 +139,18 @@ public interface UserController {
                   schema = @Schema(implementation = ErrorResponseDTO.class)))
       }
   )
-  @GetMapping("/{user_id}")
-  ResponseEntity<UserDto> getUserById(@PathVariable("user_id") Long userId);
+  @GetMapping("/{task_id}")
+  ResponseEntity<TaskDto> getTaskById(@PathVariable("task_id") Long taskId)
+      throws NotFoundException;
+
 
   @Operation(
-      summary = "Created (/open) broker account")
+      summary = "Creating a new task")
   @ApiResponses(
       value = {
           @ApiResponse(
               responseCode = "200",
-              description = "An application to open a broker account has successfully created",
+              description = "A new task has successfully created",
               content = @Content(
                   mediaType = "application/json",
                   schema = @Schema(implementation = TaskDto.class))),
@@ -191,15 +199,16 @@ public interface UserController {
       }
   )
   @PostMapping
-  ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto);
+  ResponseEntity<TaskDto> createTask(@RequestBody TaskDto taskDto) throws NotFoundException;
+
 
   @Operation(
-      summary = "Created (/open) broker account")
+      summary = "Updating task")
   @ApiResponses(
       value = {
           @ApiResponse(
               responseCode = "200",
-              description = "An application to open a broker account has successfully created",
+              description = "An application to update a task has successfully ended",
               content = @Content(
                   mediaType = "application/json",
                   schema = @Schema(implementation = TaskDto.class))),
@@ -247,16 +256,18 @@ public interface UserController {
                   schema = @Schema(implementation = ErrorResponseDTO.class)))
       }
   )
-  @PutMapping("/{userId}")
-  ResponseEntity<UserDto> updateUser(@PathVariable Long userId, @RequestBody UserDto userDto);
+  @PutMapping("/{taskId}")
+  ResponseEntity<TaskDto> updateTask(@PathVariable Long taskId,
+      @RequestBody TaskDto taskDto) throws NotFoundException;
+
 
   @Operation(
-      summary = "Created (/open) broker account")
+      summary = "Deleting task")
   @ApiResponses(
       value = {
           @ApiResponse(
               responseCode = "200",
-              description = "An application to open a broker account has successfully created",
+              description = "An operation to delete task has successfully ended",
               content = @Content(
                   mediaType = "application/json",
                   schema = @Schema(implementation = TaskDto.class))),
@@ -304,6 +315,6 @@ public interface UserController {
                   schema = @Schema(implementation = ErrorResponseDTO.class)))
       }
   )
-  @DeleteMapping("/{userId}")
-  ResponseEntity<Void> deleteUser(@PathVariable Long userId);
+  @DeleteMapping("/{taskId}")
+  ResponseEntity<Void> deleteTask(@PathVariable Long taskId) throws NotFoundException;
 }

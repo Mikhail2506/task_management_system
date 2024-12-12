@@ -1,17 +1,14 @@
 package by.toukachmikhail.taskmanagementsystem.repositories;
 
-import by.toukachmikhail.taskmanagementsystem.entities.Task;
+import by.toukachmikhail.taskmanagementsystem.entities.Comment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface TaskRepository extends JpaRepository<Task, Long> {
+public interface CommentRepository extends JpaRepository<Comment, Long> {
 
-  Page<Task> findByAuthorId(Long authorId, Pageable pageable);
-
-  Page<Task> findByAssigneeId(Long assigneeId, Pageable pageable);
-
+  Page<Comment> findByTaskId(Long taskId, Pageable pageable);
 
 }

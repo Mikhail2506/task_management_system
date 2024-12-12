@@ -2,6 +2,9 @@ package by.toukachmikhail.taskmanagementsystem.entities;
 
 import by.toukachmikhail.taskmanagementsystem.enums.TaskPriority;
 import by.toukachmikhail.taskmanagementsystem.enums.TaskStatus;
+import by.toukachmikhail.taskmanagementsystem.validators.taskspriority.ValidTaskPriority;
+import by.toukachmikhail.taskmanagementsystem.validators.taskstatus.ValidTaskStatus;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -10,25 +13,23 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import lombok.Setter;
 
 @Entity
 @Table(name = "tasks")
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Task {
@@ -36,29 +37,41 @@ public class Task {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "task_id")
-  private Long taskId;
+  private Long id;
 
-  @NonNull
-  @Column(columnDefinition = "VARCHAR(30)")
+  @NotBlank
+  @Size(min = 8, max = 50, message = "Header must be between 8 and 50 characters")
+  @Column(columnDefinition = "VARCHAR(50)")
   private String header;
 
-  @NonNull
-  @Column(columnDefinition = "VARCHAR(255)", nullable = false)
+  @NotBlank
+  @Size(min = 10, max = 255, message = "Description must be between 10 and 255 characters")
+  @Column(columnDefinition = "VARCHAR(255)")
   private String description;
 
-  @OneToOne
-  @NonNull
-  @JoinColumn(name = "status_id", referencedColumnName = "status_id")
-  private TasksStatuses status;
+  @NotBlank(message = "Status cannot be null or empty")
+  @Enumerated(EnumType.STRING)
+  @Column(name = "status_id")
+  private TaskStatus status;
 
-  @OneToOne
-  @NonNull
-  @JoinColumn(name = "task_priority_id", referencedColumnName = "priority_id")
-  private TasksPriorities taskPriority;
+  @NotBlank(message = "Priority cannot be null or empty")
+  @Enumerated(EnumType.STRING)
+  @Column(name = "priority_id")
+  private TaskPriority taskPriority;
 
-  @ManyToMany(mappedBy = "tasks")
-  private List<User> users = new ArrayList<>();;
+  @ManyToOne
+  @JoinColumn(name = "author_id", nullable = false)
+  private User author;
 
-  @Column(columnDefinition = "VARCHAR(255)", nullable = false)
-  private String comment;
+  @ManyToOne
+  @JoinColumn(name = "assignee_id", nullable = false)
+  private User assignee;
+
+  @OneToMany(mappedBy = "task", cascade = CascadeType.ALL)
+  @Builder.Default
+  private List<Comment> comments = new ArrayList<>();
+
+  public Task() {
+    this.comments = new ArrayList<>();
+  }
 }

@@ -1,6 +1,6 @@
 package by.toukachmikhail.taskmanagementsystem.enums;
 
-public enum Role{
+public enum UserRole {
   EXECUTANT,
   AUTHOR
 }

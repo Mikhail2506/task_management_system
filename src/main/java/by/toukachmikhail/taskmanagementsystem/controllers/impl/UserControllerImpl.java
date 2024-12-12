@@ -3,12 +3,14 @@ package by.toukachmikhail.taskmanagementsystem.controllers.impl;
 import by.toukachmikhail.taskmanagementsystem.controllers.UserController;
 import by.toukachmikhail.taskmanagementsystem.dto.UserDto;
 import by.toukachmikhail.taskmanagementsystem.services.UserService;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,8 +40,8 @@ public class UserControllerImpl implements UserController {
   @GetMapping("/{user_id}")
   public ResponseEntity<UserDto> getUserById(@PathVariable("user_id") Long userId) {
 
-    Optional<UserDto> userDto = userService.getUserById(userId);
-    return userDto.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    UserDto userDto = userService.getUserById(userId);
+    return ResponseEntity.ok(userDto);
   }
 
   @Override
@@ -60,11 +62,7 @@ public class UserControllerImpl implements UserController {
   @Override
   @DeleteMapping("/{userId}")
   public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
-    if (userService.getUserById(userId).isPresent()) {
       userService.deleteUser(userId);
       return ResponseEntity.noContent().build();
-    } else {
-      return ResponseEntity.notFound().build();
-    }
   }
 }

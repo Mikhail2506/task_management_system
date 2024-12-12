@@ -1,16 +1,14 @@
 package by.toukachmikhail.taskmanagementsystem.dto;
 
 import by.toukachmikhail.taskmanagementsystem.validators.digits.ValidIsDigit;
-import java.util.Set;
 import lombok.Builder;
 
 @Builder
-public record UserDto(
+public record CommentDto(
 
-//    @ValidIsDigit
-//    Long id,
-    String username,
-    Set<String> roles
+    @ValidIsDigit
+    Long id,
+    String text,
+    UserDto user
 ) {
-
 }

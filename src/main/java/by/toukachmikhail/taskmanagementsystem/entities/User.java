@@ -1,20 +1,17 @@
 package by.toukachmikhail.taskmanagementsystem.entities;
 
-import by.toukachmikhail.taskmanagementsystem.enums.Role;
-import jakarta.persistence.CascadeType;
+import by.toukachmikhail.taskmanagementsystem.enums.UserRole;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import java.util.HashSet;
+import jakarta.validation.constraints.Size;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,21 +31,20 @@ public class User {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "user_id")
-  private Long userId;
+  private Long id;
 
-  @Column(name = "user_name", columnDefinition = "VARCHAR(30)", nullable = false)
+  @Column(name = "user_name", columnDefinition = "VARCHAR(30)")
+  @Size(min = 3, max = 30, message = "Username must be at least 3 characters long")
   private String username;
 
-  @OneToOne
-  @JoinColumn(name = "user_role_id", referencedColumnName = "role_id", nullable = false)
-  private UsersRoles role;
+  @Column(name = "user_password", columnDefinition = "VARCHAR(10)")
+  @Size(min = 5, max = 10, message = "Password must be at least 5 characters long")
+  private String password;
 
-  @Column(name = "user_phone_number", columnDefinition = "VARCHAR(30)", nullable = false)
-  private String usersPhoneNumber;
-
-  @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-  @JoinTable(name = "user_task",
+  @ManyToMany(fetch = FetchType.EAGER)
+  @JoinTable(name = "user_roles",
       joinColumns = @JoinColumn(name = "user_id"),
-      inverseJoinColumns = @JoinColumn (name = "task_id"))
-  private Set<Task> tasks = new HashSet<>();
+      inverseJoinColumns = @JoinColumn(name = "role_id"))
+  private Set<Role> roles;
+
 }

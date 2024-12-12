@@ -2,36 +2,45 @@ package by.toukachmikhail.taskmanagementsystem.mappers;
 
 import by.toukachmikhail.taskmanagementsystem.dto.TaskDto;
 import by.toukachmikhail.taskmanagementsystem.entities.Task;
-import by.toukachmikhail.taskmanagementsystem.entities.TasksPriorities;
-import by.toukachmikhail.taskmanagementsystem.entities.TasksStatuses;
-import by.toukachmikhail.taskmanagementsystem.enums.TaskPriority;
-import by.toukachmikhail.taskmanagementsystem.enums.TaskStatus;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
-
+@Component
+@RequiredArgsConstructor
 public class TaskMapper {
 
-  public static TaskDto entityToDto(Task task) {
+  private final UserMapper userMapper;
+
+  private final  CommentMapper commentMapper;
+
+  public  TaskDto entityToDto(Task task) {
     return TaskDto.builder()
+        //.id(task.getId())
         .header(task.getHeader())
         .description(task.getDescription())
-        .status(task.getStatus().getStatus().name())
-        .priority(task.getTaskPriority().getPriority().name())
-        .usersDto(task.getUsers().stream().map(UserMapper::entityToDto).collect(Collectors.toList()))
-        .comment(task.getComment())
-        .taskId(task.getTaskId())
+        .status(task.getStatus())
+        .priority(task.getTaskPriority())
+        .author(userMapper.entityToDto(task.getAuthor()))
+        .assignee(userMapper.entityToDto(task.getAssignee()))
+        .comments(task.getComments().stream()
+            .map(commentMapper::entityToDTO)
+            .collect(Collectors.toList()))
         .build();
   }
 
-  public static Task dtoToEntity(TaskDto taskDto) {
-    return Task.builder()
-        .header(taskDto.header())
-        .description(taskDto.description())
-        .status(TasksStatuses.builder().status(TaskStatus.valueOf(taskDto.status())).build())
-        .taskPriority(TasksPriorities.builder().priority(TaskPriority.valueOf(taskDto.priority())).build())
-        .users(taskDto.usersDto().stream().map(UserMapper::dtoToEntity).collect(Collectors.toList()))
-        .comment(taskDto.comment())
-        .taskId(taskDto.taskId())
-        .build();
+  public Task dtoToEntity(TaskDto taskDto) {
+    Task task = new Task();
+   // task.setId(taskDto.id());
+    task.setHeader(taskDto.header());
+    task.setDescription(taskDto.description());
+    task.setStatus(taskDto.status());
+    task.setTaskPriority(taskDto.priority());
+    task.setAuthor(userMapper.dtoToEntity(taskDto.author()));
+    task.setAssignee(userMapper.dtoToEntity(taskDto.assignee()));
+    task.setComments(taskDto.comments().stream()
+        .map(commentMapper::dtoToEntity)
+        .collect(Collectors.toList()));
+    return task;
   }
 }
