@@ -24,3 +24,6 @@ spring:
 server:
   error:
     include-stacktrace: never
+jwt:
+  secret: your-256-bit-secret-1234567890abcdef1234567890abcdef
+  lifetime: 15m

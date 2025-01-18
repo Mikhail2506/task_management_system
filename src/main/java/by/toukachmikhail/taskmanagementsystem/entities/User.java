@@ -12,6 +12,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
+import java.util.List;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,14 +38,14 @@ public class User {
   @Size(min = 3, max = 30, message = "Username must be at least 3 characters long")
   private String username;
 
-  @Column(name = "user_password", columnDefinition = "VARCHAR(10)")
-  @Size(min = 5, max = 10, message = "Password must be at least 5 characters long")
+  @Column(name = "user_password", columnDefinition = "VARCHAR(256)")
+  @Size(min = 5, max = 256, message = "Password must be at least 5 characters long")
   private String password;
 
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(name = "user_roles",
       joinColumns = @JoinColumn(name = "user_id"),
       inverseJoinColumns = @JoinColumn(name = "role_id"))
-  private Set<Role> roles;
+  private List<Role> roles;
 
 }

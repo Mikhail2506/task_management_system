@@ -1,8 +1,11 @@
 package by.toukachmikhail.taskmanagementsystem.dto;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import lombok.Builder;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 @Builder
 public record ErrorResponseDTO(
@@ -11,7 +14,6 @@ public record ErrorResponseDTO(
     String message,
     List<String> details,
     LocalDateTime timestamp
-
 ) {
 
   @Override

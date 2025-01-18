@@ -28,7 +28,7 @@ public class UserControllerImpl implements UserController {
   private final UserService userService;
 
   @Override
-  @GetMapping()
+  @GetMapping("")
   public ResponseEntity<List<UserDto>> getAllUsers() {
     List<UserDto> usersDtoList = userService.getAllUsers();
     return ResponseEntity.ok()

@@ -6,6 +6,7 @@ import static by.toukachmikhail.taskmanagementsystem.exception_handling.enums.Ex
 import by.toukachmikhail.taskmanagementsystem.dto.ErrorResponseDTO;
 import by.toukachmikhail.taskmanagementsystem.exception_handling.exception.BaseException;
 
+import by.toukachmikhail.taskmanagementsystem.exception_handling.exception.UnauthorizedException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
@@ -18,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -102,6 +104,13 @@ public class GlobalExceptionHandler {
     logException(response, exception);
 
     return response;
+  }
+
+  @ExceptionHandler(BadCredentialsException.class)
+  public ResponseEntity<ErrorResponseDTO> handleNotFoundException(HttpServletRequest request,
+      UnauthorizedException exception) {
+    return buildResponseEntity(
+        request, HttpStatus.UNAUTHORIZED, exception.getMessage());
   }
 //
 //  @ExceptionHandler(AccessDeniedException.class)

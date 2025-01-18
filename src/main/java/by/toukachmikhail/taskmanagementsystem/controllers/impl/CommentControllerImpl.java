@@ -71,8 +71,7 @@ public class CommentControllerImpl implements CommentController {
   @Override
   @GetMapping("/{commentId}")
   //@PreAuthorize("hasRole('ADMIN') or @commentService.getCommentById(#commentId).user.id == authentication.principal.id")
-  public ResponseEntity<CommentDto> getCommentById(@PathVariable Long commentId)
-      throws NotFoundException {
+  public ResponseEntity<CommentDto> getCommentById(@PathVariable Long commentId){
     CommentDto commentDTO = commentService.getCommentById(commentId);
     return new ResponseEntity<>(commentDTO, HttpStatus.OK);
   }
