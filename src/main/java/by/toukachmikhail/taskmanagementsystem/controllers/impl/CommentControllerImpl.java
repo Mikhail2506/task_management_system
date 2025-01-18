@@ -31,7 +31,6 @@ public class CommentControllerImpl implements CommentController {
 
   @Override
   @PostMapping
- // @PreAuthorize("hasRole('ADMIN') or @taskService.getTaskById(#taskId).assignee.id == authentication.principal.id")
   public ResponseEntity<CommentDto> addComment(@RequestParam Long taskId, @RequestParam Long userId,
       @RequestBody String text){
     CommentDto commentDTO = commentService.createComment(taskId, userId, text);
@@ -40,7 +39,6 @@ public class CommentControllerImpl implements CommentController {
 
   @Override
   @PutMapping("/{commentId}")
-  //@PreAuthorize("hasRole('ADMIN') or @commentService.getCommentById(#commentId).user.id == authentication.principal.id")
   public ResponseEntity<CommentDto> updateComment(@PathVariable Long commentId,
       @RequestBody String text)
       throws NotFoundException {
@@ -50,7 +48,6 @@ public class CommentControllerImpl implements CommentController {
 
   @Override
   @DeleteMapping("/{commentId}")
-  //@PreAuthorize("hasRole('ADMIN') or @commentService.getCommentById(#commentId).user.id == authentication.principal.id")
   public ResponseEntity<Void> deleteComment(@PathVariable Long commentId) {
     commentService.deleteComment(commentId);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -58,7 +55,6 @@ public class CommentControllerImpl implements CommentController {
 
   @Override
   @GetMapping("/task/{taskId}")
-  //@PreAuthorize("hasRole('ADMIN') or @taskService.getTaskById(#taskId).assignee.id == authentication.principal.id")
   public ResponseEntity<Page<CommentDto>> getCommentsByTask(@PathVariable Long taskId,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size,
@@ -70,7 +66,6 @@ public class CommentControllerImpl implements CommentController {
 
   @Override
   @GetMapping("/{commentId}")
-  //@PreAuthorize("hasRole('ADMIN') or @commentService.getCommentById(#commentId).user.id == authentication.principal.id")
   public ResponseEntity<CommentDto> getCommentById(@PathVariable Long commentId){
     CommentDto commentDTO = commentService.getCommentById(commentId);
     return new ResponseEntity<>(commentDTO, HttpStatus.OK);

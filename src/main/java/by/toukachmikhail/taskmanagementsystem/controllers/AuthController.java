@@ -9,7 +9,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.security.Principal;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -73,4 +75,10 @@ public interface AuthController {
   )
   @PostMapping("/auth")
   ResponseEntity<?> createAuthToken(@RequestBody JwtRequestDto authRequest);
+
+  @GetMapping("/admin")
+  String adminData();
+
+  @GetMapping("/info")
+  String userData(Principal principal);
 }
