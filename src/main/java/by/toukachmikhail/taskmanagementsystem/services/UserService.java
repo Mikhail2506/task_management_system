@@ -1,5 +1,6 @@
 package by.toukachmikhail.taskmanagementsystem.services;
 
+import by.toukachmikhail.taskmanagementsystem.dto.RegistrationUserDto;
 import by.toukachmikhail.taskmanagementsystem.dto.UserDto;
 import by.toukachmikhail.taskmanagementsystem.entities.User;
 import java.util.List;
@@ -9,7 +10,7 @@ public interface UserService  {
 
   Optional<User> findByUsername(String username);
 
-  void createNewUser(User user);
+  UserDto createNewUser(RegistrationUserDto registrationUserdto);
 
   List<UserDto> getAllUsers();
 

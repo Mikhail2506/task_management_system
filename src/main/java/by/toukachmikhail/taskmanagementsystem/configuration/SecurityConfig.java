@@ -29,21 +29,34 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
-        .csrf(csrf -> csrf.disable())
-        .cors(cors -> cors.disable())
-        .authorizeHttpRequests(
-            auth -> auth
-                .requestMatchers("/secured").authenticated()
-                .requestMatchers("/info").authenticated()
-                .requestMatchers("/admin").hasRole("ADMIN")
-                .anyRequest().permitAll())
-        .sessionManagement(
-            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .exceptionHandling(exception -> exception.authenticationEntryPoint(
-            new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
-        .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
-    return http.build();
+        .csrf(csrf -> csrf.disable()) // Отключаем CSRF (для REST API)
+        .cors(cors -> cors.disable()) // Отключаем CORS (если не используется)
+        .authorizeHttpRequests(auth -> auth
+            // Публичные эндпоинты (доступны всем)
+            .requestMatchers("/auth", "/register").permitAll() // Эндпоинты аутентификации
+            .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll() // Swagger
 
+            // Эндпоинты для администраторов
+            .requestMatchers("/admin/**").hasRole("ADMIN") // Админские эндпоинты
+
+            // Эндпоинты для задач
+            .requestMatchers("/tasks/**").authenticated() // Все эндпоинты задач требуют аутентификации
+
+            // Эндпоинты для комментариев
+            .requestMatchers("/comments/**").authenticated() // Все эндпоинты комментариев требуют аутентификации
+
+            // Остальные эндпоинты доступны всем
+            .anyRequest().permitAll()
+        )
+        .sessionManagement(session -> session
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Без состояния (STATELESS)
+        )
+        .exceptionHandling(exception -> exception
+            .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)) // Обработка ошибок аутентификации
+        )
+        .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class); // Добавляем JWT-фильтр
+
+    return http.build();
   }
 
   @Bean

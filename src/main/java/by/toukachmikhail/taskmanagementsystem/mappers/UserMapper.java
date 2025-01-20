@@ -1,9 +1,7 @@
 package by.toukachmikhail.taskmanagementsystem.mappers;
 
 import by.toukachmikhail.taskmanagementsystem.dto.UserDto;
-import by.toukachmikhail.taskmanagementsystem.entities.Role;
 import by.toukachmikhail.taskmanagementsystem.entities.User;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -13,9 +11,7 @@ public class UserMapper {
     return UserDto.builder()
         //.id(user.getId())
         .username(user.getUsername())
-        .roles(user.getRoles().stream()
-            .map(Role::getName)
-            .collect(Collectors.toSet()))
+        .role(user.getRole())
         .build();
   }
 
@@ -23,7 +19,7 @@ public class UserMapper {
     User user = new User();
     //user.setId(userDto.id());
     user.setUsername(userDto.username());
-    // Здесь можно добавить логику для маппинга ролей, если это необходимо
+    user.setRole(userDto.role());
     return user;
   }
 }

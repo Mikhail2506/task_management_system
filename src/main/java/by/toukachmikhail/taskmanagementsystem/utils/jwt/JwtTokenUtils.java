@@ -1,6 +1,5 @@
 package by.toukachmikhail.taskmanagementsystem.utils.jwt;
 
-import by.toukachmikhail.taskmanagementsystem.entities.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -11,6 +10,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
@@ -71,5 +71,23 @@ public class JwtTokenUtils {
         .parseSignedClaims(token)
         .getPayload();
 
+  }
+
+  private <T> T extractClaim(String token, Function<Claims, T> claimResolver){
+    final Claims claims = getAllClaimsFromToken(token);
+    return claimResolver.apply(claims);
+  }
+
+  public boolean validateToken(String token, UserDetails userDetails) {
+    final String username = getUsername(token);
+    return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+  }
+
+  private boolean isTokenExpired(String token){
+    return extractExpiration(token).before(new Date());
+  }
+
+  private Date extractExpiration(String token){
+    return extractClaim(token, Claims::getExpiration);
   }
 }

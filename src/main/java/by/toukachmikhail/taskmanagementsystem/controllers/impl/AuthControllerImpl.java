@@ -6,7 +6,10 @@ import static by.toukachmikhail.taskmanagementsystem.exception_handling.enums.No
 import by.toukachmikhail.taskmanagementsystem.controllers.AuthController;
 import by.toukachmikhail.taskmanagementsystem.dto.JwtRequestDto;
 import by.toukachmikhail.taskmanagementsystem.dto.JwtResponseDto;
+import by.toukachmikhail.taskmanagementsystem.dto.RegistrationUserDto;
+import by.toukachmikhail.taskmanagementsystem.dto.UserDto;
 import by.toukachmikhail.taskmanagementsystem.exception_handling.exception.NotFoundException;
+import by.toukachmikhail.taskmanagementsystem.services.UserService;
 import by.toukachmikhail.taskmanagementsystem.utils.jwt.JwtTokenUtils;
 import java.security.Principal;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthControllerImpl implements AuthController {
 
   private final UserDetailsService userDetailsService;
+  private final UserService userService;
   private final JwtTokenUtils jwtTokenUtils;
   private final AuthenticationManager authenticationManager;
 
@@ -45,6 +49,14 @@ public class AuthControllerImpl implements AuthController {
     String token = jwtTokenUtils.generateToken(userDetails);
 
     return ResponseEntity.ok(new JwtResponseDto(token));
+  }
+
+  @Override
+  @PostMapping("/register")
+  public ResponseEntity<UserDto> adminData(@RequestBody RegistrationUserDto registrationUserDto) {
+
+    UserDto createdUser = userService.createNewUser(registrationUserDto);
+    return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
   }
 
   @Override

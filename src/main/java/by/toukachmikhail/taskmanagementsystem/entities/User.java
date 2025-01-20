@@ -3,6 +3,8 @@ package by.toukachmikhail.taskmanagementsystem.entities;
 import by.toukachmikhail.taskmanagementsystem.enums.UserRole;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -42,10 +44,8 @@ public class User {
   @Size(min = 5, max = 256, message = "Password must be at least 5 characters long")
   private String password;
 
-  @ManyToMany(fetch = FetchType.EAGER)
-  @JoinTable(name = "user_roles",
-      joinColumns = @JoinColumn(name = "user_id"),
-      inverseJoinColumns = @JoinColumn(name = "role_id"))
-  private List<Role> roles;
+  @Enumerated(EnumType.STRING) // Храним роль как строку в базе данных
+  @Column(name = "role", nullable = false)
+  private UserRole role;
 
 }

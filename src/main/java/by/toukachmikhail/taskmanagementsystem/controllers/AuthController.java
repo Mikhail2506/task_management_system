@@ -2,7 +2,9 @@ package by.toukachmikhail.taskmanagementsystem.controllers;
 
 import by.toukachmikhail.taskmanagementsystem.dto.ErrorResponseDTO;
 import by.toukachmikhail.taskmanagementsystem.dto.JwtRequestDto;
+import by.toukachmikhail.taskmanagementsystem.dto.RegistrationUserDto;
 import by.toukachmikhail.taskmanagementsystem.dto.TaskDto;
+import by.toukachmikhail.taskmanagementsystem.dto.UserDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -75,6 +77,9 @@ public interface AuthController {
   )
   @PostMapping("/auth")
   ResponseEntity<?> createAuthToken(@RequestBody JwtRequestDto authRequest);
+
+  @PostMapping("/register")
+  ResponseEntity<UserDto> adminData(@RequestBody RegistrationUserDto registrationUserDto);
 
   @GetMapping("/admin")
   String adminData();

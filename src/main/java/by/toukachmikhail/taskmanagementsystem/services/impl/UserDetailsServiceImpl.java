@@ -5,6 +5,7 @@ import static by.toukachmikhail.taskmanagementsystem.exception_handling.enums.No
 
 import by.toukachmikhail.taskmanagementsystem.entities.User;
 import by.toukachmikhail.taskmanagementsystem.repositories.UserRepository;
+import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,19 +20,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
   private final UserRepository userRepository;
 
-  /**
-   * @param username
-   * @return
-   * @throws UsernameNotFoundException
-   */
   @Override
   @Transactional
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
     User user = userRepository.findByUsername(username).orElseThrow(()-> new UsernameNotFoundException(ASSIGNEE_NOT_FOUND.getMessage()));
+    SimpleGrantedAuthority authority = new SimpleGrantedAuthority(user.getRole().name());
     return new org.springframework.security.core.userdetails.User(
         user.getUsername(),
         user.getPassword(),
-        user.getRoles().stream().map(role->new SimpleGrantedAuthority(role.getName())).toList()
-    );
+        Collections.singletonList(authority));
   }
 }

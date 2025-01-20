@@ -1,65 +1,49 @@
 package by.toukachmikhail.taskmanagementsystem.services.impl;
 
-import static by.toukachmikhail.taskmanagementsystem.exception_handling.enums.NotFoundExceptionMessage.ASSIGNEE_NOT_FOUND;
 import static by.toukachmikhail.taskmanagementsystem.exception_handling.enums.NotFoundExceptionMessage.AUTHOR_NOT_FOUND;
 
+import by.toukachmikhail.taskmanagementsystem.dto.RegistrationUserDto;
 import by.toukachmikhail.taskmanagementsystem.dto.UserDto;
 import by.toukachmikhail.taskmanagementsystem.entities.User;
+import by.toukachmikhail.taskmanagementsystem.enums.UserRole;
 import by.toukachmikhail.taskmanagementsystem.exception_handling.exception.NotFoundException;
 import by.toukachmikhail.taskmanagementsystem.mappers.UserMapper;
 import by.toukachmikhail.taskmanagementsystem.repositories.UserRepository;
-import by.toukachmikhail.taskmanagementsystem.services.RoleService;
 import by.toukachmikhail.taskmanagementsystem.services.UserService;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService  {
+public class UserServiceImpl implements UserService {
 
   private final UserRepository userRepository;
-  private final RoleService roleService;
   private final UserMapper userMapper;
+  private final PasswordEncoder passwordEncoder;
 
 
   @Override
-  public Optional<User> findByUsername(String username){
+  public Optional<User> findByUsername(String username) {
     return userRepository.findByUsername(username);
   }
 
-//  @Override
-//  @Transactional
-//  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-//    User user = findByUsername(username).orElseThrow(()-> new UsernameNotFoundException(ASSIGNEE_NOT_FOUND.getMessage()));
-//    return new org.springframework.security.core.userdetails.User(
-//        user.getUsername(),
-//        user.getPassword(),
-//        user.getRoles().stream().map(role->new SimpleGrantedAuthority(role.getName())).toList()
-//    );
-//  }
-
-
   @Override
-  public void createNewUser(User user){
-   /*
-   #toDo роли извлекатть через RoleService
-    */
-    user.setRoles(roleService.findRoleByName("USER"));
-    userRepository.save(user);
+  public UserDto createNewUser(RegistrationUserDto registrationUserDto) {
+
+    User user = User.builder()
+        .username(registrationUserDto.username())
+        .password(passwordEncoder.encode(registrationUserDto.password()))
+        .role(UserRole.USER)
+        .build();
+    User savedUser = userRepository.save(user);
+    return userMapper.entityToDto(savedUser);
   }
 
-  /**
-   * @return
-   */
   @Override
   public List<UserDto> getAllUsers() {
     List<User> users = userRepository.findAll();
@@ -68,10 +52,6 @@ public class UserServiceImpl implements UserService  {
         .collect(Collectors.toList());
   }
 
-  /**
-   * @param userId
-   * @return
-   */
   @Override
   public UserDto getUserById(Long userId) {
 
@@ -85,10 +65,7 @@ public class UserServiceImpl implements UserService  {
     }
   }
 
-  /**
-   * @param userDto
-   * @return
-   */
+  // метод не нужен?
   @Override
   public UserDto saveUser(UserDto userDto) {
     User user = userMapper.dtoToEntity(userDto);
@@ -96,9 +73,6 @@ public class UserServiceImpl implements UserService  {
     return userMapper.entityToDto(user);
   }
 
-  /**
-   * @param userDto
-   */
   @Override
   public Optional<UserDto> updateUser(Long userId, UserDto userDto) {
     return userRepository.findById(userId).map(existingUser -> {
@@ -109,17 +83,9 @@ public class UserServiceImpl implements UserService  {
     });
   }
 
-  /**
-   * @param userId
-   */
   @Override
   public void deleteUser(Long userId) {
     userRepository.deleteById(userId);
   }
 
-  /**
-   * @param username
-   * @return
-   * @throws UsernameNotFoundException
-   */
 }
