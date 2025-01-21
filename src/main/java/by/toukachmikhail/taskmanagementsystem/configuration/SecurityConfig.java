@@ -35,16 +35,12 @@ public class SecurityConfig {
             // Публичные эндпоинты (доступны всем)
             .requestMatchers("/auth", "/register").permitAll() // Эндпоинты аутентификации
             .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll() // Swagger
-
             // Эндпоинты для администраторов
             .requestMatchers("/admin/**").hasRole("ADMIN") // Админские эндпоинты
-
             // Эндпоинты для задач
             .requestMatchers("/tasks/**").authenticated() // Все эндпоинты задач требуют аутентификации
-
             // Эндпоинты для комментариев
             .requestMatchers("/comments/**").authenticated() // Все эндпоинты комментариев требуют аутентификации
-
             // Остальные эндпоинты доступны всем
             .anyRequest().permitAll()
         )

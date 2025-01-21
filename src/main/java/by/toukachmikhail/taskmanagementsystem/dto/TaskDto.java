@@ -6,6 +6,7 @@ import by.toukachmikhail.taskmanagementsystem.validators.digits.ValidIsDigit;
 import by.toukachmikhail.taskmanagementsystem.validators.taskspriority.ValidTaskPriority;
 import by.toukachmikhail.taskmanagementsystem.validators.taskstatus.ValidTaskStatus;
 import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import lombok.Builder;
@@ -28,9 +29,13 @@ public record TaskDto(
     @ValidTaskPriority
     TaskPriority priority,
 
+    @NotBlank
     UserDto author,
+
+    @NotBlank
     UserDto assignee,
 
+    @NotBlank
     List<CommentDto> comments
 ) {
 

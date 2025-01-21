@@ -144,6 +144,20 @@ public interface TaskController {
       throws NotFoundException;
 
 
+  @GetMapping("/author/{authorId}")
+  ResponseEntity<Page<TaskDto>> getTasksByAuthor(@PathVariable Long authorId,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size,
+      @RequestParam(defaultValue = "id") String sortBy,
+      @RequestParam(defaultValue = "asc") String direction);
+
+  @GetMapping("/assignee/{assigneeId}")
+  ResponseEntity<Page<TaskDto>> getTasksByAssignee(@PathVariable Long assigneeId,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size,
+      @RequestParam(defaultValue = "id") String sortBy,
+      @RequestParam(defaultValue = "asc") String direction);
+
   @Operation(
       summary = "Creating a new task")
   @ApiResponses(

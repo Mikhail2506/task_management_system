@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -32,6 +33,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
   private final JwtTokenUtils jwtTokenUtils;
 
+  @Autowired
   ApplicationContext context;
 
 

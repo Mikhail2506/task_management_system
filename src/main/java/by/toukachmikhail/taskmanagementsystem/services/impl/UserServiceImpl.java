@@ -1,12 +1,14 @@
 package by.toukachmikhail.taskmanagementsystem.services.impl;
 
 import static by.toukachmikhail.taskmanagementsystem.exception_handling.enums.NotFoundExceptionMessage.AUTHOR_NOT_FOUND;
+import static by.toukachmikhail.taskmanagementsystem.exception_handling.enums.ValidationExceptionMessage.VERIFY_PASSWORD_MATCHING;
 
 import by.toukachmikhail.taskmanagementsystem.dto.RegistrationUserDto;
 import by.toukachmikhail.taskmanagementsystem.dto.UserDto;
 import by.toukachmikhail.taskmanagementsystem.entities.User;
 import by.toukachmikhail.taskmanagementsystem.enums.UserRole;
 import by.toukachmikhail.taskmanagementsystem.exception_handling.exception.NotFoundException;
+import by.toukachmikhail.taskmanagementsystem.exception_handling.exception.ValidationException;
 import by.toukachmikhail.taskmanagementsystem.mappers.UserMapper;
 import by.toukachmikhail.taskmanagementsystem.repositories.UserRepository;
 import by.toukachmikhail.taskmanagementsystem.services.UserService;

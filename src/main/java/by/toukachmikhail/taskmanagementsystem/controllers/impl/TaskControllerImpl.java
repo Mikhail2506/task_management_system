@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,7 +31,8 @@ public class TaskControllerImpl implements TaskController {
   private final TaskService taskService;
 
   @Override
-  @GetMapping()
+  @GetMapping()// просмотр всех задач только админ
+  @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<Page<TaskDto>> getAllTasks(@RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size,
       @RequestParam(defaultValue = "id") String sortBy,
@@ -42,37 +44,41 @@ public class TaskControllerImpl implements TaskController {
   }
 
   @Override
-  @GetMapping("/{task_id}")
+  @GetMapping("/{task_id}")// просмотр задачи все аутентифицированные пользователи
   public ResponseEntity<TaskDto> getTaskById(@PathVariable("task_id") Long taskId)
       throws NotFoundException {
-
     TaskDto taskDto = taskService.getTaskById(taskId);
     return new ResponseEntity<>(taskDto, HttpStatus.OK);
   }
 
+  @Override
   @GetMapping("/author/{authorId}")
- // @PreAuthorize("hasRole('ADMIN') or #authorId == authentication.principal.id")
+  @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<Page<TaskDto>> getTasksByAuthor(@PathVariable Long authorId,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size,
       @RequestParam(defaultValue = "id") String sortBy,
-      @RequestParam(defaultValue = "asc") String direction)  {
+      @RequestParam(defaultValue = "asc") String direction) {
     Page<TaskDto> taskDtos = taskService.getTasksByAuthor(authorId, page, size, sortBy, direction);
     return new ResponseEntity<>(taskDtos, HttpStatus.OK);
   }
 
+  @Override
   @GetMapping("/assignee/{assigneeId}")
-  //@PreAuthorize("hasRole('ADMIN') or #assigneeId == authentication.principal.id")
-  public ResponseEntity<Page<TaskDto>> getTasksByAssignee(@PathVariable Long assigneeId,  @RequestParam(defaultValue = "0") int page,
+  @PreAuthorize("hasRole('ADMIN')")
+  public ResponseEntity<Page<TaskDto>> getTasksByAssignee(@PathVariable Long assigneeId,
+      @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size,
       @RequestParam(defaultValue = "id") String sortBy,
       @RequestParam(defaultValue = "asc") String direction) {
-    Page<TaskDto> taskDtos = taskService.getTasksByAssignee(assigneeId, page, size, sortBy, direction);
+    Page<TaskDto> taskDtos = taskService.getTasksByAssignee(assigneeId, page, size, sortBy,
+        direction);
     return new ResponseEntity<>(taskDtos, HttpStatus.OK);
   }
 
   @Override
-  @PostMapping
+  @PostMapping// создание задач только админ
+  @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<TaskDto> createTask(@Valid @RequestBody TaskDto taskDto)
       throws NotFoundException {
     return ResponseEntity.status(HttpStatus.CREATED).body(taskService.createTask(taskDto));
@@ -80,6 +86,7 @@ public class TaskControllerImpl implements TaskController {
 
   @Override
   @PutMapping("/{taskId}")
+  @PreAuthorize("hasRole('ADMIN')")// обновление задач только админ
   public ResponseEntity<TaskDto> updateTask(@Valid @PathVariable Long taskId,
       @RequestBody TaskDto taskDto) throws NotFoundException {
     TaskDto updatedTaskDTO = taskService.updateTask(taskId, taskDto);
@@ -88,7 +95,8 @@ public class TaskControllerImpl implements TaskController {
 
   @Override
   @DeleteMapping("/{taskId}")
-  public ResponseEntity<Void> deleteTask(@Valid @PathVariable Long taskId){
+  @PreAuthorize("hasRole('ADMIN')")//удаление задач только админ
+  public ResponseEntity<Void> deleteTask(@Valid @PathVariable Long taskId) {
     return new ResponseEntity<>(HttpStatus.OK);
   }
 

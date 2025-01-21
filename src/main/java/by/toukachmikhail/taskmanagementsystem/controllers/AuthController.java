@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.security.Principal;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -79,7 +80,7 @@ public interface AuthController {
   ResponseEntity<?> createAuthToken(@RequestBody JwtRequestDto authRequest);
 
   @PostMapping("/register")
-  ResponseEntity<UserDto> adminData(@RequestBody RegistrationUserDto registrationUserDto);
+  ResponseEntity<UserDto> registerNewUser(@Valid @RequestBody RegistrationUserDto registrationUserDto);
 
   @GetMapping("/admin")
   String adminData();

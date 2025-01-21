@@ -44,28 +44,28 @@ public class CommentControllerImpl implements CommentController {
     return new ResponseEntity<>(updatedCommentDTO, HttpStatus.OK);
   }
 
-  @Override
-  @DeleteMapping("/{commentId}")
-  public ResponseEntity<Void> deleteComment(@PathVariable Long commentId) {
-    commentService.deleteComment(commentId);
-    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-  }
+//  @Override
+//  @DeleteMapping("/{commentId}")
+//  public ResponseEntity<Void> deleteComment(@PathVariable Long commentId) {
+//    commentService.deleteComment(commentId);
+//    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+//  }
 
-  @Override
-  @GetMapping("/task/{taskId}")
-  public ResponseEntity<Page<CommentDto>> getCommentsByTask(@PathVariable Long taskId,
-      @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "10") int size,
-      @RequestParam(defaultValue = "id") String sortBy,
-      @RequestParam(defaultValue = "asc") String direction) {
-    Page<CommentDto> commentDTOs = commentService.getCommentsByTask(taskId, page, size, sortBy, direction);
-    return new ResponseEntity<>(commentDTOs, HttpStatus.OK);
-  }
+//  @Override
+//  @GetMapping("/task/{taskId}")
+//  public ResponseEntity<Page<CommentDto>> getCommentsByTask(@PathVariable Long taskId,
+//      @RequestParam(defaultValue = "0") int page,
+//      @RequestParam(defaultValue = "10") int size,
+//      @RequestParam(defaultValue = "id") String sortBy,
+//      @RequestParam(defaultValue = "asc") String direction) {
+//    Page<CommentDto> commentDTOs = commentService.getCommentsByTask(taskId, page, size, sortBy, direction);
+//    return new ResponseEntity<>(commentDTOs, HttpStatus.OK);
+//  }
 
-  @Override
-  @GetMapping("/{commentId}")
-  public ResponseEntity<CommentDto> getCommentById(@PathVariable Long commentId){
-    CommentDto commentDTO = commentService.getCommentById(commentId);
-    return new ResponseEntity<>(commentDTO, HttpStatus.OK);
-  }
+//  @Override
+//  @GetMapping("/{commentId}")
+//  public ResponseEntity<CommentDto> getCommentById(@PathVariable Long commentId){
+//    CommentDto commentDTO = commentService.getCommentById(commentId);
+//    return new ResponseEntity<>(commentDTO, HttpStatus.OK);
+//  }
 }

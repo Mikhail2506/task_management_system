@@ -11,6 +11,7 @@ import by.toukachmikhail.taskmanagementsystem.dto.UserDto;
 import by.toukachmikhail.taskmanagementsystem.exception_handling.exception.NotFoundException;
 import by.toukachmikhail.taskmanagementsystem.services.UserService;
 import by.toukachmikhail.taskmanagementsystem.utils.jwt.JwtTokenUtils;
+import jakarta.validation.Valid;
 import java.security.Principal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -53,7 +54,7 @@ public class AuthControllerImpl implements AuthController {
 
   @Override
   @PostMapping("/register")
-  public ResponseEntity<UserDto> adminData(@RequestBody RegistrationUserDto registrationUserDto) {
+  public ResponseEntity<UserDto> registerNewUser(@Valid @RequestBody RegistrationUserDto registrationUserDto) {
 
     UserDto createdUser = userService.createNewUser(registrationUserDto);
     return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);

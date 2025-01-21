@@ -190,63 +190,6 @@ public interface UserController {
                   schema = @Schema(implementation = ErrorResponseDTO.class)))
       }
   )
-  @PostMapping
-  ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto);
-
-  @Operation(
-      summary = "Created (/open) broker account")
-  @ApiResponses(
-      value = {
-          @ApiResponse(
-              responseCode = "200",
-              description = "An application to open a broker account has successfully created",
-              content = @Content(
-                  mediaType = "application/json",
-                  schema = @Schema(implementation = TaskDto.class))),
-          @ApiResponse(
-              responseCode = "400",
-              description = "Bad Request",
-              content = @Content(
-                  mediaType = "application/json",
-                  schema = @Schema(implementation = ErrorResponseDTO.class))),
-          @ApiResponse(
-              responseCode = "403",
-              description = "Forbidden",
-              content = @Content(
-                  mediaType = "application/json",
-                  schema = @Schema(implementation = ErrorResponseDTO.class))),
-          @ApiResponse(
-              responseCode = "404",
-              description = "Not Found",
-              content = @Content(
-                  mediaType = "application/json",
-                  schema = @Schema(implementation = ErrorResponseDTO.class))),
-          @ApiResponse(
-              responseCode = "408",
-              description = "Request Timeout",
-              content = @Content(
-                  mediaType = "application/json",
-                  schema = @Schema(implementation = ErrorResponseDTO.class))),
-          @ApiResponse(
-              responseCode = "429",
-              description = "Too Many Requests",
-              content = @Content(
-                  mediaType = "application/json",
-                  schema = @Schema(implementation = ErrorResponseDTO.class))),
-          @ApiResponse(
-              responseCode = "500",
-              description = "Internal server error",
-              content = @Content(
-                  mediaType = "application/json",
-                  schema = @Schema(implementation = ErrorResponseDTO.class))),
-          @ApiResponse(
-              responseCode = "503",
-              description = "Service Unavailable",
-              content = @Content(
-                  mediaType = "application/json",
-                  schema = @Schema(implementation = ErrorResponseDTO.class)))
-      }
-  )
   @PutMapping("/{userId}")
   ResponseEntity<UserDto> updateUser(@PathVariable Long userId, @RequestBody UserDto userDto);
 
