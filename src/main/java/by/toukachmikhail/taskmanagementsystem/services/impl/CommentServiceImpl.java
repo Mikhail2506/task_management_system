@@ -1,5 +1,6 @@
 package by.toukachmikhail.taskmanagementsystem.services.impl;
 
+import static by.toukachmikhail.taskmanagementsystem.exception_handling.enums.ForbiddenExceptionMessage.COMMENT_CREATION_DENIED;
 import static by.toukachmikhail.taskmanagementsystem.exception_handling.enums.NotFoundExceptionMessage.COMMENT_NOT_FOUND;
 
 import by.toukachmikhail.taskmanagementsystem.dto.CommentDto;
@@ -7,6 +8,7 @@ import by.toukachmikhail.taskmanagementsystem.dto.TaskDto;
 import by.toukachmikhail.taskmanagementsystem.dto.UserDto;
 import by.toukachmikhail.taskmanagementsystem.entities.Comment;
 import by.toukachmikhail.taskmanagementsystem.entities.Task;
+import by.toukachmikhail.taskmanagementsystem.exception_handling.exception.ForbiddenException;
 import by.toukachmikhail.taskmanagementsystem.exception_handling.exception.NotFoundException;
 import by.toukachmikhail.taskmanagementsystem.mappers.CommentMapper;
 import by.toukachmikhail.taskmanagementsystem.mappers.TaskMapper;
@@ -36,29 +38,23 @@ public class CommentServiceImpl implements CommentService {
   @Override
   public CommentDto createComment(Long taskId, Long userId, String text) {
     TaskDto taskDto = taskService.getTaskById(taskId);
+    Task task = taskMapper.dtoToEntity(taskDto);
     UserDto userDto = userService.getUserById(userId);
+
+    if (!task.getAssignee().getId().equals(userId)) {
+      throw new ForbiddenException(COMMENT_CREATION_DENIED.getMessage());
+    }
 
     try {
       Comment comment = new Comment();
       comment.setText(text);
-      comment.setTask(taskMapper.dtoToEntity(taskDto));
+      taskMapper.entityToDto(task);
+      comment.setTask(taskMapper.dtoToEntity(taskMapper.entityToDto(task)));
       comment.setUser(userMapper.dtoToEntity(userDto));
 
       return commentMapper.entityToDTO(commentRepository.save(comment));
     } catch (RuntimeException e) {
       throw new NotFoundException(e.getMessage());
-    }
-  }
-
-  @Override
-  public CommentDto updateComment(Long commentId, String text) {
-    Comment comment = commentRepository.findById(commentId)
-        .orElseThrow(() -> new NotFoundException(COMMENT_NOT_FOUND.getMessage()));
-    try {
-      comment.setText(text);
-      return commentMapper.entityToDTO(commentRepository.save(comment));
-    } catch (RuntimeException e) {
-      throw new NotFoundException(COMMENT_NOT_FOUND.getMessage());
     }
   }
 

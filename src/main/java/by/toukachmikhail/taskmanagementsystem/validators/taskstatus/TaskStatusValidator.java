@@ -9,11 +9,6 @@ import java.util.Arrays;
 
 public class TaskStatusValidator implements ConstraintValidator<ValidTaskStatus, TaskStatus> {
 
-  /**
-   * @param value   object to validate
-   * @param context context in which the constraint is evaluated
-   * @return
-   */
   @Override
   public boolean isValid(TaskStatus value, ConstraintValidatorContext context) {
 

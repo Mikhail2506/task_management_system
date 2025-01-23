@@ -24,7 +24,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
   private final UserDetailsService userDetailsService;
-  private final JwtRequestFilter jwtRequestFilter;
+  private final JwtRequestFilterConfig jwtRequestFilter;
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -33,14 +33,15 @@ public class SecurityConfig {
         .cors(cors -> cors.disable()) // Отключаем CORS (если не используется)
         .authorizeHttpRequests(auth -> auth
             // Публичные эндпоинты (доступны всем)
-            .requestMatchers("/auth", "/register").permitAll() // Эндпоинты аутентификации
+            .requestMatchers("/api/v1/auth", "/api/v1/register").permitAll() // Эндпоинты аутентификации
             .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll() // Swagger
             // Эндпоинты для администраторов
-            .requestMatchers("/admin/**").hasRole("ADMIN") // Админские эндпоинты
+            .requestMatchers("/api/v1/admin/**").hasAuthority("ADMIN")
+            //hasRole("ADMIN") // Админские эндпоинты
             // Эндпоинты для задач
-            .requestMatchers("/tasks/**").authenticated() // Все эндпоинты задач требуют аутентификации
+            .requestMatchers("/api/v1/tasks/**").authenticated() // Все эндпоинты задач требуют аутентификации
             // Эндпоинты для комментариев
-            .requestMatchers("/comments/**").authenticated() // Все эндпоинты комментариев требуют аутентификации
+            .requestMatchers("/api/v1/users/**").hasAuthority("ADMIN")// Все эндпоинты комментариев требуют аутентификации
             // Остальные эндпоинты доступны всем
             .anyRequest().permitAll()
         )

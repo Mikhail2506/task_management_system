@@ -9,8 +9,6 @@ public interface CommentService {
 
   CommentDto createComment(Long taskId, Long userId, String text);
 
-  CommentDto updateComment(Long commentId, String text);
-
   void deleteComment(Long commentId);
 
   Page<CommentDto> getCommentsByTask(Long taskId, int page, int size, String sortBy,

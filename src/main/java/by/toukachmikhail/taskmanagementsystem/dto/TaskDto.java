@@ -29,13 +29,10 @@ public record TaskDto(
     @ValidTaskPriority
     TaskPriority priority,
 
-    @NotBlank
     UserDto author,
 
-    @NotBlank
     UserDto assignee,
 
-    @NotBlank
     List<CommentDto> comments
 ) {
 

@@ -49,6 +49,7 @@ public class AuthControllerImpl implements AuthController {
     UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.username());
     String token = jwtTokenUtils.generateToken(userDetails);
 
+
     return ResponseEntity.ok(new JwtResponseDto(token));
   }
 

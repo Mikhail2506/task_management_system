@@ -1,9 +1,9 @@
 package by.toukachmikhail.taskmanagementsystem.services;
 
 import by.toukachmikhail.taskmanagementsystem.dto.TaskDto;
+import by.toukachmikhail.taskmanagementsystem.entities.Task;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface TaskService {

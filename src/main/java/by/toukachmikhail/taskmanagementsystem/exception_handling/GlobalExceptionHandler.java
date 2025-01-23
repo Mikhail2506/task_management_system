@@ -11,6 +11,7 @@ import static by.toukachmikhail.taskmanagementsystem.exception_handling.enums.Va
 
 import by.toukachmikhail.taskmanagementsystem.dto.ErrorResponseDTO;
 import by.toukachmikhail.taskmanagementsystem.exception_handling.exception.BaseException;
+import by.toukachmikhail.taskmanagementsystem.exception_handling.exception.ForbiddenException;
 import by.toukachmikhail.taskmanagementsystem.exception_handling.exception.UnauthorizedException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -79,14 +80,6 @@ public class GlobalExceptionHandler {
   }
 
   /**
-   * Handles ConstraintViolationException, an exception thrown when constraint validation fails.
-   *
-   * @param request   HttpServletRequest object representing the HTTP request
-   * @param exception ConstraintViolationException object representing the thrown exception
-   * @return ResponseEntity containing ErrorResponseDTO with appropriate error details
-   */
-
-  /**
    * Handles ResponseStatusException, standard exception, extended from Exception for returning
    * status and message.
    *
@@ -108,14 +101,15 @@ public class GlobalExceptionHandler {
     return buildResponseEntity(
         request, HttpStatus.UNAUTHORIZED, exception.getMessage());
   }
-//
+
 //  @ExceptionHandler(AccessDeniedException.class)
 //  public ResponseEntity<ErrorResponseDTO> handleAccessDeniedException(HttpServletRequest request,
 //      AccessDeniedException exception) {
 //    ForbiddenException forbiddenException = new ForbiddenException(exception.getMessage());
 //    return handleBaseException(request, forbiddenException);
 //  }
-//
+
+
   /**
    * Handles AuthenticationException, an exception thrown when jwt token is not valid or has expired
    * or there is no token in the header.
@@ -203,6 +197,12 @@ public class GlobalExceptionHandler {
     return buildResponseEntity(request, BAD_REQUEST.getHttpStatus(), INVALID_ARGUMENT_TYPE.getMessage());
   }
 
+  @ExceptionHandler(ForbiddenException.class)
+  public ResponseEntity<ErrorResponseDTO> handleNotFoundException(HttpServletRequest request,ForbiddenException exception) {
+    return buildResponseEntity(
+        request, HttpStatus.FORBIDDEN, exception.getMessage());
+  }
+
   /**
    * Handles general exceptions that are not specifically handled by other methods.
    *
@@ -243,5 +243,4 @@ public class GlobalExceptionHandler {
         .contentType(MediaType.APPLICATION_JSON)
         .body(response);
   }
-
 }

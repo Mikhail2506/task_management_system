@@ -6,9 +6,6 @@ import lombok.Builder;
 @Builder
 public record CommentDto(
 
-    @ValidIsDigit
-    Long id,
-    String text,
-    UserDto user
+    String text
 ) {
 }

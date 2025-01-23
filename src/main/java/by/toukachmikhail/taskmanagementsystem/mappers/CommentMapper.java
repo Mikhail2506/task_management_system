@@ -15,7 +15,6 @@ public class CommentMapper {
     return CommentDto.builder()
         //.id(comment.getId())
         .text(comment.getText())
-        .user(userMapper.entityToDto(comment.getUser()))
         .build();
   }
 
@@ -23,7 +22,6 @@ public class CommentMapper {
     Comment comment = new Comment();
    // comment.setId(commentDto.id());
     comment.setText(commentDto.text());
-    comment.setUser(userMapper.dtoToEntity(commentDto.user()));
     return comment;
   }
 }

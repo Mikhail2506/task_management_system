@@ -14,19 +14,11 @@ import java.util.Arrays;
 
 public class TaskPriorityValidator implements ConstraintValidator<ValidTaskPriority, TaskPriority> {
 
-  /**
-   * @param value   object to validate
-   * @param context context in which the constraint is evaluated
-   */
   @Override
-  public boolean isValid(TaskPriority value, ConstraintValidatorContext context) {
-
-    if (!Arrays.asList(TaskStatus.values()).contains(value)) {
-      context.disableDefaultConstraintViolation();
-      context.buildConstraintViolationWithTemplate(TASK_PRIORITY_ERROR.getMessage())
-          .addConstraintViolation();
-      return false;
+  public boolean isValid(TaskPriority priority, ConstraintValidatorContext context) {
+    if (priority == null) {
+      return false; // или true, если null допустим
     }
-    return true;
+    return priority == TaskPriority.HIGH || priority == TaskPriority.MIDDLE || priority == TaskPriority.LOW;
   }
 }

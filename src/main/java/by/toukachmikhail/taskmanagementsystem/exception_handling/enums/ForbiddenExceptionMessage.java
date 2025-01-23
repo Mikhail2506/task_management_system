@@ -6,6 +6,6 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum ForbiddenExceptionMessage {
-  ACCOUNT_CREATION_DENIED("Создание новых аккаунтов запрещено. Обратитесь в офис");
+  COMMENT_CREATION_DENIED("Создание и редактирование комментариев запрещено - нет доступа к задаче");
   private final String message;
 }

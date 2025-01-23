@@ -2,8 +2,6 @@ package by.toukachmikhail.taskmanagementsystem.entities;
 
 import by.toukachmikhail.taskmanagementsystem.enums.TaskPriority;
 import by.toukachmikhail.taskmanagementsystem.enums.TaskStatus;
-import by.toukachmikhail.taskmanagementsystem.validators.taskspriority.ValidTaskPriority;
-import by.toukachmikhail.taskmanagementsystem.validators.taskstatus.ValidTaskStatus;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,7 +15,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,21 +37,19 @@ public class Task {
   private Long id;
 
   @NotBlank
-  @Size(min = 8, max = 50, message = "Header must be between 8 and 50 characters")
+  @Size(min = 5, max = 50, message = "Header must be between 5 and 50 characters")
   @Column(columnDefinition = "VARCHAR(50)")
   private String header;
 
   @NotBlank
-  @Size(min = 10, max = 255, message = "Description must be between 10 and 255 characters")
+  @Size(min = 5, max = 255, message = "Description must be between 5 and 255 characters")
   @Column(columnDefinition = "VARCHAR(255)")
   private String description;
 
-  @NotBlank(message = "Status cannot be null or empty")
   @Enumerated(EnumType.STRING)
   @Column(name = "status_id")
   private TaskStatus status;
 
-  @NotBlank(message = "Priority cannot be null or empty")
   @Enumerated(EnumType.STRING)
   @Column(name = "priority_id")
   private TaskPriority taskPriority;

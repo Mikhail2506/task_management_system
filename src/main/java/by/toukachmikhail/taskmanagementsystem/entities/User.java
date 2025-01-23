@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
 import java.util.List;
@@ -43,6 +44,9 @@ public class User {
   @Column(name = "user_password", columnDefinition = "VARCHAR(256)")
   @Size(min = 5, max = 256, message = "Password must be at least 5 characters long")
   private String password;
+
+  @OneToMany(mappedBy = "assignee") // Обратная связь
+  private List<Task> tasks;
 
   @Enumerated(EnumType.STRING) // Храним роль как строку в базе данных
   @Column(name = "role", nullable = false)

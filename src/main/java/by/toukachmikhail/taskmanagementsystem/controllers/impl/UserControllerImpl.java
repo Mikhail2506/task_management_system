@@ -8,6 +8,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +26,7 @@ public class UserControllerImpl implements UserController {
 
   @Override
   @GetMapping("")
+  @PreAuthorize("hasAuthority('ADMIN')")
   public ResponseEntity<List<UserDto>> getAllUsers() {
     List<UserDto> usersDtoList = userService.getAllUsers();
     return ResponseEntity.ok()
@@ -34,6 +36,7 @@ public class UserControllerImpl implements UserController {
 
   @Override
   @GetMapping("/{user_id}")
+  @PreAuthorize("hasAuthority('ADMIN')")
   public ResponseEntity<UserDto> getUserById(@PathVariable("user_id") Long userId) {
     UserDto userDto = userService.getUserById(userId);
     return ResponseEntity.ok(userDto);
@@ -42,6 +45,7 @@ public class UserControllerImpl implements UserController {
 
   @Override
   @PutMapping("/{userId}")
+  @PreAuthorize("hasAuthority('ADMIN')")
   public ResponseEntity<UserDto> updateUser(@PathVariable Long userId,
       @RequestBody UserDto userDto) {
     Optional<UserDto> updatedUserDto = userService.updateUser(userId, userDto);
@@ -51,6 +55,7 @@ public class UserControllerImpl implements UserController {
 
   @Override
   @DeleteMapping("/{userId}")
+  @PreAuthorize("hasAuthority('ADMIN')")
   public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
       userService.deleteUser(userId);
       return ResponseEntity.noContent().build();

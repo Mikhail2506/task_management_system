@@ -4,9 +4,9 @@ import static by.toukachmikhail.taskmanagementsystem.exception_handling.enums.No
 import static by.toukachmikhail.taskmanagementsystem.exception_handling.enums.NotFoundExceptionMessage.AUTHOR_NOT_FOUND;
 import static by.toukachmikhail.taskmanagementsystem.exception_handling.enums.NotFoundExceptionMessage.TASK_NOT_FOUND;
 
+import by.toukachmikhail.taskmanagementsystem.dto.CommentDto;
 import by.toukachmikhail.taskmanagementsystem.dto.TaskDto;
 import by.toukachmikhail.taskmanagementsystem.entities.Comment;
-import by.toukachmikhail.taskmanagementsystem.dto.CommentDto;
 import by.toukachmikhail.taskmanagementsystem.entities.Task;
 import by.toukachmikhail.taskmanagementsystem.entities.User;
 import by.toukachmikhail.taskmanagementsystem.exception_handling.exception.NotFoundException;
@@ -15,7 +15,6 @@ import by.toukachmikhail.taskmanagementsystem.repositories.CommentRepository;
 import by.toukachmikhail.taskmanagementsystem.repositories.TaskRepository;
 import by.toukachmikhail.taskmanagementsystem.repositories.UserRepository;
 import by.toukachmikhail.taskmanagementsystem.services.TaskService;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -46,12 +45,7 @@ public class TaskServiceImpl implements TaskService {
   public TaskDto getTaskById(Long taskId) {
     Task task = taskRepository.findById(taskId)
         .orElseThrow(() -> new NotFoundException(TASK_NOT_FOUND.getMessage()));
-
-    try {
-      return taskMapper.entityToDto(task);
-    } catch (RuntimeException e) {
-      throw new NotFoundException(TASK_NOT_FOUND.getMessage());
-    }
+    return taskMapper.entityToDto(task);
   }
 
   @Override
@@ -96,7 +90,7 @@ public class TaskServiceImpl implements TaskService {
       comment.setText(commentDTO.text());
       comment.setTask(createdTask);
 
-      User commentUser = userRepository.findByUsername(commentDTO.user().username())
+      User commentUser = userRepository.findByUsername(task.getAssignee().getUsername())
           .orElseThrow(() -> new NotFoundException(ASSIGNEE_NOT_FOUND.getMessage()));
       comment.setUser(commentUser);
 
