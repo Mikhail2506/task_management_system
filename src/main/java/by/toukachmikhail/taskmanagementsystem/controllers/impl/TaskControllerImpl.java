@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -33,16 +35,18 @@ public class TaskControllerImpl implements TaskController {
   private final PagedResourcesAssembler<TaskDto> pagedResourcesAssembler;
 
   @Override
-  @GetMapping()// просмотр всех задач только админ
+  @GetMapping // просмотр всех задач только админ
   @PreAuthorize("hasAuthority('ADMIN')")
-  public ResponseEntity<Page<TaskDto>> getAllTasks(@RequestParam(defaultValue = "0") int page,
+  public ResponseEntity<PagedModel<EntityModel<TaskDto>>> getAllTasks(
+      @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size,
       @RequestParam(defaultValue = "id") String sortBy,
       @RequestParam(defaultValue = "asc") String direction) {
     Page<TaskDto> tasksDtoList = taskService.getAllTasks(page, size, sortBy, direction);
+    PagedModel<EntityModel<TaskDto>> pagedModel = pagedResourcesAssembler.toModel(tasksDtoList);
     return ResponseEntity.ok()
         .contentType(MediaType.APPLICATION_JSON)
-        .body(tasksDtoList);
+        .body(pagedModel);
   }
 
   @Override
@@ -66,16 +70,17 @@ public class TaskControllerImpl implements TaskController {
 //  }
 
   @Override
-  @GetMapping("/assignee/{assigneeId}")
+  @GetMapping("/assignee/{assigneeId}") // задачи по исполнителю (только админ)
   @PreAuthorize("hasAuthority('ADMIN')")
-  public ResponseEntity<Page<TaskDto>> getTasksByAssignee(@PathVariable Long assigneeId,
+  public ResponseEntity<PagedModel<EntityModel<TaskDto>>> getTasksByAssignee(
+      @PathVariable Long assigneeId,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size,
       @RequestParam(defaultValue = "id") String sortBy,
       @RequestParam(defaultValue = "asc") String direction) {
-    Page<TaskDto> taskDtos = taskService.getTasksByAssignee(assigneeId, page, size, sortBy,
-        direction);
-    return new ResponseEntity<>(taskDtos, HttpStatus.OK);
+    Page<TaskDto> taskDtos = taskService.getTasksByAssignee(assigneeId, page, size, sortBy, direction);
+    PagedModel<EntityModel<TaskDto>> pagedModel = pagedResourcesAssembler.toModel(taskDtos);
+    return new ResponseEntity<>(pagedModel, HttpStatus.OK);
   }
 
   @Override

@@ -5,6 +5,7 @@ import by.toukachmikhail.taskmanagementsystem.enums.TaskStatus;
 import by.toukachmikhail.taskmanagementsystem.validators.digits.ValidIsDigit;
 import by.toukachmikhail.taskmanagementsystem.validators.taskspriority.ValidTaskPriority;
 import by.toukachmikhail.taskmanagementsystem.validators.taskstatus.ValidTaskStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -14,11 +15,10 @@ import lombok.Builder;
 @Builder
 public record TaskDto(
 
-//    @ValidIsDigit
-//    Long id,
-
+    @NotBlank
     String header,
 
+    @NotBlank
     String description,
 
     @NotNull(message = "Task status cannot be null")
@@ -33,6 +33,9 @@ public record TaskDto(
 
     UserDto assignee,
 
+    CommentDto comment,
+
+    @JsonIgnore
     List<CommentDto> comments
 ) {
 

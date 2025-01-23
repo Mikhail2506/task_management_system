@@ -10,10 +10,12 @@ import by.toukachmikhail.taskmanagementsystem.entities.Comment;
 import by.toukachmikhail.taskmanagementsystem.entities.Task;
 import by.toukachmikhail.taskmanagementsystem.entities.User;
 import by.toukachmikhail.taskmanagementsystem.exception_handling.exception.NotFoundException;
+import by.toukachmikhail.taskmanagementsystem.mappers.CommentMapper;
 import by.toukachmikhail.taskmanagementsystem.mappers.TaskMapper;
 import by.toukachmikhail.taskmanagementsystem.repositories.CommentRepository;
 import by.toukachmikhail.taskmanagementsystem.repositories.TaskRepository;
 import by.toukachmikhail.taskmanagementsystem.repositories.UserRepository;
+import by.toukachmikhail.taskmanagementsystem.services.CommentService;
 import by.toukachmikhail.taskmanagementsystem.services.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -31,6 +33,7 @@ public class TaskServiceImpl implements TaskService {
   private final UserRepository userRepository;
   private final CommentRepository commentRepository;
   private final TaskMapper taskMapper;
+  private final CommentMapper commentMapper;
 
   @Override
   public Page<TaskDto> getAllTasks(int page, int size, String sortBy, String direction) {
@@ -85,31 +88,45 @@ public class TaskServiceImpl implements TaskService {
 
     Task createdTask = taskRepository.save(task);
 
-    for (CommentDto commentDTO : taskDTO.comments()) {
-      Comment comment = new Comment();
-      comment.setText(commentDTO.text());
-      comment.setTask(createdTask);
+    Comment comment = new Comment();
+    comment.setText(String.valueOf(taskDTO.comment()));
+    comment.setTask(createdTask);
 
-      User commentUser = userRepository.findByUsername(task.getAssignee().getUsername())
-          .orElseThrow(() -> new NotFoundException(ASSIGNEE_NOT_FOUND.getMessage()));
-      comment.setUser(commentUser);
+    User commentUser = userRepository.findByUsername(task.getAssignee().getUsername())
+        .orElseThrow(() -> new NotFoundException(ASSIGNEE_NOT_FOUND.getMessage()));
+    comment.setUser(commentUser);
 
-      commentRepository.save(comment);
-    }
+    commentRepository.save(comment);
 
     return taskMapper.entityToDto(createdTask);
   }
 
   @Override
   public TaskDto updateTask(Long id, TaskDto taskDTO) {
+
     Task taskDetails = taskMapper.dtoToEntity(taskDTO);
+
     Task task = taskRepository.findById(id)
         .orElseThrow(() -> new NotFoundException(TASK_NOT_FOUND.getMessage()));
+
+    if (taskDetails.getAssignee() != null) {
+      User assignee = userRepository.findByUsername(taskDetails.getAssignee().getUsername())
+          .orElseThrow(() -> new NotFoundException(
+              ASSIGNEE_NOT_FOUND.getMessage()));
+
+      taskDetails.setAssignee(assignee);
+    }
+
+    if (taskDTO.comment() != null) {
+      Comment newComment = commentMapper.dtoToEntity(taskDTO.comment());
+      newComment.setTask(task);
+      task.getComments().add(newComment);
+    }
+
     task.setHeader(taskDetails.getHeader());
     task.setDescription(taskDetails.getDescription());
     task.setStatus(taskDetails.getStatus());
     task.setTaskPriority(taskDetails.getTaskPriority());
-    task.setAssignee(taskDetails.getAssignee());
     Task updatedTask = taskRepository.save(task);
     return taskMapper.entityToDto(updatedTask);
   }
