@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestParam;
     description = "Controller to create, show, update and delete tasks")
 public interface TaskController {
 
-
   @GetMapping // просмотр всех задач только админ
   @PreAuthorize("hasAuthority('ADMIN')")
   ResponseEntity<PagedModel<EntityModel<TaskDto>>> getAllTasks(

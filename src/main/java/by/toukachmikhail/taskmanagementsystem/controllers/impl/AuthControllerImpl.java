@@ -1,6 +1,5 @@
 package by.toukachmikhail.taskmanagementsystem.controllers.impl;
 
-
 import static by.toukachmikhail.taskmanagementsystem.exception_handling.enums.NotFoundExceptionMessage.ASSIGNEE_NOT_FOUND;
 
 import by.toukachmikhail.taskmanagementsystem.controllers.AuthController;
@@ -49,13 +48,13 @@ public class AuthControllerImpl implements AuthController {
     UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.username());
     String token = jwtTokenUtils.generateToken(userDetails);
 
-
     return ResponseEntity.ok(new JwtResponseDto(token));
   }
 
   @Override
   @PostMapping("/register")
-  public ResponseEntity<UserDto> registerNewUser(@Valid @RequestBody RegistrationUserDto registrationUserDto) {
+  public ResponseEntity<UserDto> registerNewUser(
+      @Valid @RequestBody RegistrationUserDto registrationUserDto) {
 
     UserDto createdUser = userService.createNewUser(registrationUserDto);
     return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);

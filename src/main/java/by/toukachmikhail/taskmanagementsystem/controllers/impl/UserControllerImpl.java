@@ -4,7 +4,6 @@ import by.toukachmikhail.taskmanagementsystem.controllers.UserController;
 import by.toukachmikhail.taskmanagementsystem.dto.UserDto;
 import by.toukachmikhail.taskmanagementsystem.services.UserService;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -42,15 +41,13 @@ public class UserControllerImpl implements UserController {
     return ResponseEntity.ok(userDto);
   }
 
-
   @Override
   @PutMapping("/{userId}")
   @PreAuthorize("hasAuthority('ADMIN')")
   public ResponseEntity<UserDto> updateUser(@PathVariable Long userId,
       @RequestBody UserDto userDto) {
-    Optional<UserDto> updatedUserDto = userService.updateUser(userId, userDto);
-    return updatedUserDto.map(ResponseEntity::ok)
-        .orElseGet(() -> ResponseEntity.notFound().build());
+    UserDto updatedUserDto = userService.updateUser(userId, userDto);
+    return ResponseEntity.ok(updatedUserDto);
   }
 
   @Override

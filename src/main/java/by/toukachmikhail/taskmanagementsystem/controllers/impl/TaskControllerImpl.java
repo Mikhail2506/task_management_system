@@ -2,7 +2,9 @@ package by.toukachmikhail.taskmanagementsystem.controllers.impl;
 
 import by.toukachmikhail.taskmanagementsystem.controllers.TaskController;
 import by.toukachmikhail.taskmanagementsystem.dto.TaskDto;
+import by.toukachmikhail.taskmanagementsystem.entities.User;
 import by.toukachmikhail.taskmanagementsystem.services.TaskService;
+import by.toukachmikhail.taskmanagementsystem.services.impl.UserDetailsServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
@@ -32,10 +34,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class TaskControllerImpl implements TaskController {
 
   private final TaskService taskService;
+  private final UserDetailsServiceImpl userDetailsService;
   private final PagedResourcesAssembler<TaskDto> pagedResourcesAssembler;
 
   @Override
-  @GetMapping // просмотр всех задач только админ
+  @GetMapping
   @PreAuthorize("hasAuthority('ADMIN')")
   public ResponseEntity<PagedModel<EntityModel<TaskDto>>> getAllTasks(
       @RequestParam(defaultValue = "0") int page,
@@ -50,27 +53,14 @@ public class TaskControllerImpl implements TaskController {
   }
 
   @Override
-  @GetMapping("/{task_id}")// просмотр задачи все аутентифицированные пользователи
+  @GetMapping("/{task_id}")
   public ResponseEntity<TaskDto> getTaskById(@PathVariable("task_id") Long taskId) {
     TaskDto taskDto = taskService.getTaskById(taskId);
     return new ResponseEntity<>(taskDto, HttpStatus.OK);
   }
 
-  // один админ - позже удалить
-//  @Override
-//  @GetMapping("/author/{authorId}")
-//  @PreAuthorize("hasAuthority('ADMIN')")
-//  public ResponseEntity<Page<TaskDto>> getTasksByAuthor(@PathVariable Long authorId,
-//      @RequestParam(defaultValue = "0") int page,
-//      @RequestParam(defaultValue = "10") int size,
-//      @RequestParam(defaultValue = "id") String sortBy,
-//      @RequestParam(defaultValue = "asc") String direction) {
-//    Page<TaskDto> taskDtos = taskService.getTasksByAuthor(authorId, page, size, sortBy, direction);
-//    return new ResponseEntity<>(taskDtos, HttpStatus.OK);
-//  }
-
   @Override
-  @GetMapping("/assignee/{assigneeId}") // задачи по исполнителю (только админ)
+  @GetMapping("/assignee/{assigneeId}")
   @PreAuthorize("hasAuthority('ADMIN')")
   public ResponseEntity<PagedModel<EntityModel<TaskDto>>> getTasksByAssignee(
       @PathVariable Long assigneeId,
@@ -78,13 +68,14 @@ public class TaskControllerImpl implements TaskController {
       @RequestParam(defaultValue = "10") int size,
       @RequestParam(defaultValue = "id") String sortBy,
       @RequestParam(defaultValue = "asc") String direction) {
-    Page<TaskDto> taskDtos = taskService.getTasksByAssignee(assigneeId, page, size, sortBy, direction);
+    Page<TaskDto> taskDtos = taskService.getTasksByAssignee(assigneeId, page, size, sortBy,
+        direction);
     PagedModel<EntityModel<TaskDto>> pagedModel = pagedResourcesAssembler.toModel(taskDtos);
     return new ResponseEntity<>(pagedModel, HttpStatus.OK);
   }
 
   @Override
-  @PostMapping// создание задач только админ
+  @PostMapping
   @PreAuthorize("hasAuthority('ADMIN')")
   public ResponseEntity<TaskDto> createTask(@Valid @RequestBody TaskDto taskDto)
       throws NotFoundException {
@@ -93,18 +84,18 @@ public class TaskControllerImpl implements TaskController {
 
   @Override
   @PutMapping("/{taskId}")
-  @PreAuthorize("hasAuthority('ADMIN')")// обновление задач только админ
+  @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
   public ResponseEntity<TaskDto> updateTask(@Valid @PathVariable Long taskId,
-      @RequestBody TaskDto taskDto) throws NotFoundException {
-    TaskDto updatedTaskDTO = taskService.updateTask(taskId, taskDto);
+      @RequestBody TaskDto taskDto) {
+    User currentUser = userDetailsService.getCurrentUser();
+    TaskDto updatedTaskDTO = taskService.updateTask(taskId, taskDto, currentUser);
     return new ResponseEntity<>(updatedTaskDTO, HttpStatus.OK);
   }
 
   @Override
   @DeleteMapping("/{taskId}")
-  @PreAuthorize("hasAuthority('ADMIN')")//удаление задач только админ
+  @PreAuthorize("hasAuthority('ADMIN')")
   public ResponseEntity<Void> deleteTask(@Valid @PathVariable Long taskId) {
     return new ResponseEntity<>(HttpStatus.OK);
   }
-
 }

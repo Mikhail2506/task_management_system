@@ -62,7 +62,7 @@ public class Task {
   @JoinColumn(name = "assignee_id", nullable = false)
   private User assignee;
 
-  @OneToMany(mappedBy = "task", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
   @Builder.Default
   private List<Comment> comments = new ArrayList<>();
 

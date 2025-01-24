@@ -13,9 +13,6 @@ public enum ExceptionType {
       "Запрещено. Отсутствуют права доступа к содержимому."),
   NOT_FOUND(HttpStatus.NOT_FOUND,
       "Страница не найдена"),
-  METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED,
-      "Метод не разрешен. Сервер знает о запрашиваемом методе, " +
-          "но он был деактивирован и не может быть использован."),
   NOT_ACCEPTABLE(HttpStatus.NOT_ACCEPTABLE,
       "Неприемлемо. Сервер не нашёл контента, отвечающего критериям."),
   REQUEST_TIMEOUT(HttpStatus.REQUEST_TIMEOUT,

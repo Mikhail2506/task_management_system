@@ -57,11 +57,11 @@ public class JwtTokenUtils {
     List<?> roles = claims.get("roles", List.class);
     if (roles != null) {
       return roles.stream()
-          .filter(String.class::isInstance) // Проверяем, что элемент является строкой
-          .map(String.class::cast) // Приводим к типу String
+          .filter(String.class::isInstance)
+          .map(String.class::cast)
           .collect(Collectors.toList());
     }
-    return Collections.emptyList(); // Возвращаем пустой список, если роли отсутствуют
+    return Collections.emptyList();
   }
 
   private Claims getAllClaimsFromToken(String token) {
@@ -73,7 +73,7 @@ public class JwtTokenUtils {
 
   }
 
-  private <T> T extractClaim(String token, Function<Claims, T> claimResolver){
+  private <T> T extractClaim(String token, Function<Claims, T> claimResolver) {
     final Claims claims = getAllClaimsFromToken(token);
     return claimResolver.apply(claims);
   }
@@ -83,11 +83,11 @@ public class JwtTokenUtils {
     return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
   }
 
-  private boolean isTokenExpired(String token){
+  private boolean isTokenExpired(String token) {
     return extractExpiration(token).before(new Date());
   }
 
-  private Date extractExpiration(String token){
+  private Date extractExpiration(String token) {
     return extractClaim(token, Claims::getExpiration);
   }
 }

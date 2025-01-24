@@ -34,7 +34,6 @@ public class JwtRequestFilterConfig extends OncePerRequestFilter {
   @Autowired
   ApplicationContext context;
 
-
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
       FilterChain filterChain) throws ServletException, IOException {
@@ -61,9 +60,6 @@ public class JwtRequestFilterConfig extends OncePerRequestFilter {
       if (jwtTokenUtils.validateToken(jwt, userDetails)) {
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
             userDetails, null, userDetails.getAuthorities()
-//          jwtTokenUtils.getRoles(jwt).stream()
-//          .map(SimpleGrantedAuthority::new)
-//          .collect(Collectors.toList())
         );
         token.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(token);

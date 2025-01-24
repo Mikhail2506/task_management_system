@@ -5,8 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum ConflictExceptionMessage {
-  NOT_ENOUGH_MONEY(
-      "Недостаточно средств");
+public enum AccessDeniedExceptionMessage {
+ ACCESS_DENIED_EXCEPTION_MESSAGE("Пользователь не авторизован");
   private final String message;
 }

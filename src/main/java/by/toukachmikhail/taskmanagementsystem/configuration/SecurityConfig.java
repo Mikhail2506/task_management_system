@@ -20,7 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-@EnableMethodSecurity(securedEnabled = true)
+@EnableMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class SecurityConfig {
 
   private final UserDetailsService userDetailsService;
@@ -29,29 +29,30 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
-        .csrf(csrf -> csrf.disable()) // Отключаем CSRF (для REST API)
-        .cors(cors -> cors.disable()) // Отключаем CORS (если не используется)
+        .csrf(csrf -> csrf.disable())
+        .cors(cors -> cors.disable())
         .authorizeHttpRequests(auth -> auth
-            // Публичные эндпоинты (доступны всем)
-            .requestMatchers("/api/v1/auth", "/api/v1/register").permitAll() // Эндпоинты аутентификации
-            .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll() // Swagger
-            // Эндпоинты для администраторов
+            .requestMatchers("/api/v1/auth", "/api/v1/register")
+            .permitAll()
+            .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
             .requestMatchers("/api/v1/admin/**").hasAuthority("ADMIN")
-            //hasRole("ADMIN") // Админские эндпоинты
-            // Эндпоинты для задач
-            .requestMatchers("/api/v1/tasks/**").authenticated() // Все эндпоинты задач требуют аутентификации
-            // Эндпоинты для комментариев
-            .requestMatchers("/api/v1/users/**").hasAuthority("ADMIN")// Все эндпоинты комментариев требуют аутентификации
-            // Остальные эндпоинты доступны всем
+            .requestMatchers("/api/v1/tasks/**").hasAnyAuthority("ADMIN", "USER")
+            .requestMatchers("/api/v1/users/**").hasAuthority("ADMIN")
             .anyRequest().permitAll()
         )
         .sessionManagement(session -> session
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Без состояния (STATELESS)
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         )
         .exceptionHandling(exception -> exception
-            .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)) // Обработка ошибок аутентификации
+            .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+            .accessDeniedHandler((request, response, accessDeniesException) -> {
+                  response.setStatus(HttpStatus.FORBIDDEN.value());
+                  response.getWriter()
+                      .write("Access denied: You do not have permission to access this resource.");
+                })
         )
-        .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class); // Добавляем JWT-фильтр
+        .addFilterBefore(jwtRequestFilter,
+            UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
   }

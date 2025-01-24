@@ -17,13 +17,13 @@ import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -56,6 +56,14 @@ public class GlobalExceptionHandler {
     return buildResponseEntity(request, exception.getHttpStatus(), exception.getMessage());
   }
 
+  @ExceptionHandler(AuthorizationDeniedException.class)
+  public ResponseEntity<ErrorResponseDTO> handleAuthorizationDeniedException(
+      HttpServletRequest request,
+      AuthorizationDeniedException exception) {
+
+    return buildResponseEntity(request, HttpStatus.FORBIDDEN, exception.getMessage());
+  }
+
   @ExceptionHandler(HttpMessageNotReadableException.class)
   public ResponseEntity<ErrorResponseDTO> handleHttpMessageNotReadableException(
       HttpServletRequest request, HttpMessageNotReadableException exception) {
@@ -65,7 +73,8 @@ public class GlobalExceptionHandler {
     if (cause instanceof InvalidFormatException formatException) {
       if (formatException.getTargetType() != null && formatException.getTargetType().isEnum()) {
         String invalidValue = formatException.getValue().toString();
-        String errorMessage = String.format("Invalid value '%s' for enum '%s'", invalidValue, formatException.getTargetType().getSimpleName());
+        String errorMessage = String.format("Invalid value '%s' for enum '%s'", invalidValue,
+            formatException.getTargetType().getSimpleName());
         return buildResponseEntity(request, HttpStatus.BAD_REQUEST, errorMessage);
       }
     }
@@ -74,19 +83,12 @@ public class GlobalExceptionHandler {
   }
 
   @ExceptionHandler(NotFoundException.class)
-  public ResponseEntity<ErrorResponseDTO> handleNotFoundException(HttpServletRequest request,NotFoundException exception) {
+  public ResponseEntity<ErrorResponseDTO> handleNotFoundException(HttpServletRequest request,
+      NotFoundException exception) {
     return buildResponseEntity(
         request, HttpStatus.NOT_FOUND, exception.getMessage());
   }
 
-  /**
-   * Handles ResponseStatusException, standard exception, extended from Exception for returning
-   * status and message.
-   *
-   * @param request   HttpServletRequest object representing the HTTP request
-   * @param exception ResponseStatusException object representing the thrown exception
-   * @return ResponseEntity containing ErrorResponseDTO with appropriate error details
-   */
   @ExceptionHandler(ResponseStatusException.class)
   public ResponseEntity<ErrorResponseDTO> handleResponseStatusException(
       HttpServletRequest request, ResponseStatusException exception) {
@@ -102,22 +104,6 @@ public class GlobalExceptionHandler {
         request, HttpStatus.UNAUTHORIZED, exception.getMessage());
   }
 
-//  @ExceptionHandler(AccessDeniedException.class)
-//  public ResponseEntity<ErrorResponseDTO> handleAccessDeniedException(HttpServletRequest request,
-//      AccessDeniedException exception) {
-//    ForbiddenException forbiddenException = new ForbiddenException(exception.getMessage());
-//    return handleBaseException(request, forbiddenException);
-//  }
-
-
-  /**
-   * Handles AuthenticationException, an exception thrown when jwt token is not valid or has expired
-   * or there is no token in the header.
-   *
-   * @param request   HttpServletRequest object representing the HTTP request
-   * @param exception AuthenticationException object representing the thrown exception
-   * @return ResponseEntity containing ErrorResponseDTO with appropriate error details
-   */
   @ExceptionHandler(AuthenticationException.class)
   public ResponseEntity<ErrorResponseDTO> handleAuthException(HttpServletRequest request,
       Exception exception) {
@@ -135,81 +121,37 @@ public class GlobalExceptionHandler {
     return buildResponseEntity(request, UNAUTHORIZED.getHttpStatus(), responseMessage);
   }
 
-  /**
-   * Handles MethodArgumentNotValidException, an exception thrown when method argument validation
-   * fails.
-   *
-   * @param request   HttpServletRequest object representing the HTTP request
-   * @param exception MethodArgumentNotValidException object representing the thrown exception
-   * @return ResponseEntity containing ErrorResponseDTO with appropriate error details
-   */
-
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<ErrorResponseDTO> handleMethodArgumentNotValidException(
       HttpServletRequest request, MethodArgumentNotValidException exception) {
 
-    return buildResponseEntity(request, BAD_REQUEST.getHttpStatus(), VERIFY_PASSWORD_MATCHING.getMessage());
+    return buildResponseEntity(request, BAD_REQUEST.getHttpStatus(),
+        VERIFY_PASSWORD_MATCHING.getMessage());
   }
 
-  /**
-   * Handles ConstraintViolationException, an exception thrown when constraint validation fails.
-   *
-   * @param request   HttpServletRequest object representing the HTTP request
-   * @param exception ConstraintViolationException object representing the thrown exception
-   * @return ResponseEntity containing ErrorResponseDTO with appropriate error details
-   */
   @ExceptionHandler(ConstraintViolationException.class)
   public ResponseEntity<ErrorResponseDTO> handleConstraintViolationException(
       HttpServletRequest request, Exception exception) {
 
-    return buildResponseEntity(request, BAD_REQUEST.getHttpStatus(), INVALID_INPUT_DATA.getMessage());
+    return buildResponseEntity(request, BAD_REQUEST.getHttpStatus(),
+        INVALID_INPUT_DATA.getMessage());
   }
 
-  /**
-   * Handles HttpMessageConversionException, an exception thrown when request body cannot be read.
-   *
-   * @param request   HttpServletRequest object representing the HTTP request
-   * @param exception HttpMessageNotReadableException object representing the thrown exception
-   * @return ResponseEntity containing ErrorResponseDTO with appropriate error details
-   */
-//  @ExceptionHandler(HttpMessageConversionException.class)
-//  public ResponseEntity<ErrorResponseDTO> handleHttpMessageConversionException(
-//      HttpServletRequest request, Exception exception) {
-//
-//    var response = buildResponseEntity(request, BAD_REQUEST.getHttpStatus(), exception.getMessage(), Collections.emptyList());
-//    logValidationException(response, exception);
-//
-//    return response;
-//  }
-
-  /**
-   * Handles HttpMessageNotReadableException, an exception thrown when method argument type mismatch
-   * occurs.
-   *
-   * @param request   HttpServletRequest object representing the HTTP request
-   * @param exception MethodArgumentTypeMismatchException object representing the thrown exception
-   * @return ResponseEntity containing ErrorResponseDTO with appropriate error details
-   */
   @ExceptionHandler(MethodArgumentTypeMismatchException.class)
   public ResponseEntity<ErrorResponseDTO> handleMethodArgumentTypeMismatchException(
       HttpServletRequest request, Exception exception) {
 
-    return buildResponseEntity(request, BAD_REQUEST.getHttpStatus(), INVALID_ARGUMENT_TYPE.getMessage());
+    return buildResponseEntity(request, BAD_REQUEST.getHttpStatus(),
+        INVALID_ARGUMENT_TYPE.getMessage());
   }
 
   @ExceptionHandler(ForbiddenException.class)
-  public ResponseEntity<ErrorResponseDTO> handleNotFoundException(HttpServletRequest request,ForbiddenException exception) {
+  public ResponseEntity<ErrorResponseDTO> handleNotFoundException(HttpServletRequest request,
+      ForbiddenException exception) {
     return buildResponseEntity(
         request, HttpStatus.FORBIDDEN, exception.getMessage());
   }
 
-  /**
-   * Handles general exceptions that are not specifically handled by other methods.
-   *
-   * @param request   HttpServletRequest object representing the HTTP request
-   * @param exception Object representing the thrown exception
-   * @return ResponseEntity containing ErrorResponseDTO with appropriate error details
-   */
   @ExceptionHandler({Exception.class})
   public ResponseEntity<ErrorResponseDTO> handleInternalServerError(
       HttpServletRequest request, Throwable exception) {
@@ -217,15 +159,6 @@ public class GlobalExceptionHandler {
     return buildResponseEntity(request, INTERNAL_SERVER_ERROR.getHttpStatus(),
         INTERNAL_SERVER_ERROR.getMessage());
   }
-
-  /**
-   * Builds a ResponseEntity object with the provided error details.
-   *
-   * @param request    HttpServletRequest object representing the HTTP request
-   * @param statusCode HttpStatusCode representing the statusCode of exception
-   * @param message    String containing the error message
-   * @return ResponseEntity containing ErrorResponseDTO with appropriate error details
-   */
 
   private ResponseEntity<ErrorResponseDTO> buildResponseEntity(
       HttpServletRequest request, HttpStatus statusCode, String message) {

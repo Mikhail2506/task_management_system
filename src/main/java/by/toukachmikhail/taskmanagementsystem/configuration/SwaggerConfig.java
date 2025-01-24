@@ -25,8 +25,8 @@ public class SwaggerConfig {
                 .type(SecurityScheme.Type.HTTP)
                 .scheme("bearer")
                 .bearerFormat("JWT")
-                .in(SecurityScheme.In.HEADER) // Указываем, что токен передается в заголовке
-                .description("Введите только JWT-токен (без 'Bearer')"))); // Описание для пользователя
+                .in(SecurityScheme.In.HEADER)
+                .description("Введите только JWT-токен (без 'Bearer')")));
   }
 
 }

@@ -1,22 +1,18 @@
 package by.toukachmikhail.taskmanagementsystem.entities;
 
 import by.toukachmikhail.taskmanagementsystem.enums.UserRole;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
 import java.util.List;
-import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -45,7 +41,7 @@ public class User {
   @Size(min = 5, max = 256, message = "Password must be at least 5 characters long")
   private String password;
 
-  @OneToMany(mappedBy = "assignee") // Обратная связь
+  @OneToMany(mappedBy = "assignee", cascade = CascadeType.REMOVE)
   private List<Task> tasks;
 
   @Enumerated(EnumType.STRING) // Храним роль как строку в базе данных

@@ -2,11 +2,9 @@ package by.toukachmikhail.taskmanagementsystem.dto;
 
 import by.toukachmikhail.taskmanagementsystem.enums.TaskPriority;
 import by.toukachmikhail.taskmanagementsystem.enums.TaskStatus;
-import by.toukachmikhail.taskmanagementsystem.validators.digits.ValidIsDigit;
 import by.toukachmikhail.taskmanagementsystem.validators.taskspriority.ValidTaskPriority;
 import by.toukachmikhail.taskmanagementsystem.validators.taskstatus.ValidTaskStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;

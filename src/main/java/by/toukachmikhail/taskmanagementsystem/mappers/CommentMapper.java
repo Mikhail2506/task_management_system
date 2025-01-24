@@ -13,14 +13,12 @@ public class CommentMapper {
 
   public CommentDto entityToDTO(Comment comment) {
     return CommentDto.builder()
-        //.id(comment.getId())
         .text(comment.getText())
         .build();
   }
 
   public Comment dtoToEntity(CommentDto commentDto) {
     Comment comment = new Comment();
-   // comment.setId(commentDto.id());
     comment.setText(commentDto.text());
     return comment;
   }
