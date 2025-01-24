@@ -81,10 +81,15 @@ public class TaskServiceImpl implements TaskService {
     task.setStatus(taskDTO.status());
     task.setTaskPriority(taskDTO.priority());
 
-    User author = userRepository.findByUsername(taskDTO.author().username())
-        .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND.getMessage()));
-    User assignee = userRepository.findByUsername(taskDTO.assignee().username())
+//    User author = userRepository.findByEmail(taskDTO.author().email())
+//        .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND.getMessage()));
+    User assignee = userRepository.findByEmail(taskDTO.assignee().email())
         .orElseThrow(() -> new NotFoundException(ASSIGNEE_NOT_FOUND.getMessage()));
+
+    author.setUsername(taskDTO.author().username());
+    author.setEmail(taskDTO.author().email());
+    author.setRole(taskDTO.author().role());
+    assignee.setRole(UserRole.USER);
 
     task.setAuthor(author);
     task.setAssignee(assignee);

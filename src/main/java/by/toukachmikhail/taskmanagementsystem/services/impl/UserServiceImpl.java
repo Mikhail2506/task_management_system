@@ -1,5 +1,6 @@
 package by.toukachmikhail.taskmanagementsystem.services.impl;
 
+import static by.toukachmikhail.taskmanagementsystem.exception_handling.enums.ForbiddenExceptionMessage.USER_ALREADY_EXISTS;
 import static by.toukachmikhail.taskmanagementsystem.exception_handling.enums.NotFoundExceptionMessage.ASSIGNEE_NOT_FOUND;
 
 import by.toukachmikhail.taskmanagementsystem.dto.RegistrationUserDto;
@@ -7,6 +8,7 @@ import by.toukachmikhail.taskmanagementsystem.dto.UserDto;
 import by.toukachmikhail.taskmanagementsystem.entities.Task;
 import by.toukachmikhail.taskmanagementsystem.entities.User;
 import by.toukachmikhail.taskmanagementsystem.enums.UserRole;
+import by.toukachmikhail.taskmanagementsystem.exception_handling.exception.ForbiddenException;
 import by.toukachmikhail.taskmanagementsystem.exception_handling.exception.NotFoundException;
 import by.toukachmikhail.taskmanagementsystem.mappers.UserMapper;
 import by.toukachmikhail.taskmanagementsystem.repositories.TaskRepository;
@@ -31,15 +33,20 @@ public class UserServiceImpl implements UserService {
 
 
   @Override
-  public User findByUsername(String username) {
-    return userRepository.findByUsername(username)
+  public User findByEmail(String email) {
+    return userRepository.findByEmail(email)
         .orElseThrow(() -> new NotFoundException(ASSIGNEE_NOT_FOUND.getMessage()));
   }
 
   @Override
   public UserDto createNewUser(RegistrationUserDto registrationUserDto) {
+    if (isUserExistByEmail(registrationUserDto.email())) {
+      throw new ForbiddenException(USER_ALREADY_EXISTS.getMessage());
+    }
+
     User user = User.builder()
         .username(registrationUserDto.username())
+        .email(registrationUserDto.email())
         .password(passwordEncoder.encode(registrationUserDto.password()))
         .role(UserRole.USER)
         .build();
@@ -77,6 +84,10 @@ public class UserServiceImpl implements UserService {
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new NotFoundException(ASSIGNEE_NOT_FOUND.getMessage()));
     userRepository.delete(user);
+  }
+
+  private boolean isUserExistByEmail(String email) {
+    return userRepository.existsByEmail(email);
   }
 
 }

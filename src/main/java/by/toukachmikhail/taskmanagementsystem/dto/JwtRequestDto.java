@@ -2,7 +2,7 @@ package by.toukachmikhail.taskmanagementsystem.dto;
 
 
 public record JwtRequestDto(
-    String username,
+    String email,
     String password
 ) {
 

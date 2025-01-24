@@ -39,23 +39,23 @@ public class JwtRequestFilterConfig extends OncePerRequestFilter {
       FilterChain filterChain) throws ServletException, IOException {
 
     String authHeader = request.getHeader("Authorization");
-    String username = null;
+    String email = null;
     String jwt = null;
 
     if (authHeader != null && authHeader.startsWith("Bearer ")) {
       jwt = authHeader.substring(7);
       try {
-        username = jwtTokenUtils.getUsername(jwt);
+        email = jwtTokenUtils.getEmail(jwt);
       } catch (ExpiredJwtException e) {
         throw new UnauthorizedException(TOKEN_HAS_EXPIRED.getMessage());
       } catch (SignatureException e) {
         throw new UnauthorizedException(TOKEN_NOT_VALID.getMessage());
       }
     }
-    if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+    if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
       UserDetails userDetails = context.getBean(UserDetailsService.class)
-          .loadUserByUsername(username);
+          .loadUserByUsername(email);
 
       if (jwtTokenUtils.validateToken(jwt, userDetails)) {
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(

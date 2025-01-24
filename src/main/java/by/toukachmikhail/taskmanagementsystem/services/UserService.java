@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface UserService  {
 
-  User findByUsername(String username);
+  User findByEmail(String username);
 
   UserDto createNewUser(RegistrationUserDto registrationUserdto);
 

@@ -33,6 +33,8 @@ public class JwtTokenUtils {
         .map(GrantedAuthority::getAuthority)
         .toList();
     claims.put("roles", rolesList);
+    claims.put("email", userDetails.getUsername());
+
     Date issuedDate = new Date();
     Date expiredDate = new Date(issuedDate.getTime() + jwtLifeTime.toMillis());
     return Jwts.builder()
@@ -48,8 +50,8 @@ public class JwtTokenUtils {
     return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
   }
 
-  public String getUsername(String token) {
-    return getAllClaimsFromToken(token).getSubject();
+  public String getEmail(String token) {
+    return getAllClaimsFromToken(token).getSubject(); // Subject теперь содержит email
   }
 
   public List<String> getRoles(String token) {
@@ -79,8 +81,8 @@ public class JwtTokenUtils {
   }
 
   public boolean validateToken(String token, UserDetails userDetails) {
-    final String username = getUsername(token);
-    return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    final String email = getEmail(token);
+    return (email.equals(userDetails.getUsername()) && !isTokenExpired(token));
   }
 
   private boolean isTokenExpired(String token) {

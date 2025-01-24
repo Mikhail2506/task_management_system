@@ -41,11 +41,11 @@ public class AuthControllerImpl implements AuthController {
   public ResponseEntity<?> createAuthToken(@RequestBody JwtRequestDto authRequest) {
     try {
       authenticationManager.authenticate(
-          new UsernamePasswordAuthenticationToken(authRequest.username(), authRequest.password()));
+          new UsernamePasswordAuthenticationToken(authRequest.email(), authRequest.password()));
     } catch (BadCredentialsException e) {
       throw new NotFoundException(ASSIGNEE_NOT_FOUND.getMessage(), HttpStatus.UNAUTHORIZED);
     }
-    UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.username());
+    UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.email());
     String token = jwtTokenUtils.generateToken(userDetails);
 
     return ResponseEntity.ok(new JwtResponseDto(token));
