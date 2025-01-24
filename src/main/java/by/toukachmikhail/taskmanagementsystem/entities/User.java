@@ -11,6 +11,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -36,6 +38,11 @@ public class User {
   @Column(name = "user_name", columnDefinition = "VARCHAR(30)")
   @Size(min = 3, max = 30, message = "Username must be at least 3 characters long")
   private String username;
+
+  @Column(name = "user_email", columnDefinition = "VARCHAR(30)")
+  @NotBlank(message = "Users email required")
+  @Email(message = "Invalid email format")
+  private String email;
 
   @Column(name = "user_password", columnDefinition = "VARCHAR(256)")
   @Size(min = 5, max = 256, message = "Password must be at least 5 characters long")
