@@ -19,6 +19,7 @@ import by.toukachmikhail.taskmanagementsystem.repositories.CommentRepository;
 import by.toukachmikhail.taskmanagementsystem.repositories.TaskRepository;
 import by.toukachmikhail.taskmanagementsystem.repositories.UserRepository;
 import by.toukachmikhail.taskmanagementsystem.services.TaskService;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -48,21 +49,21 @@ public class TaskServiceImpl implements TaskService {
     Pageable pageable = PageRequest.of(page, size, sort);
 
     if (currentUser.getRole() == UserRole.USER) {
-      Page<Task> currentUserTasks = taskRepository.findByAssignee(
-          currentUser, pageable);
-      return currentUserTasks.map(taskMapper::entityToDtoForList);
+      Page<Task> currentUserTasks = taskRepository.findByAssignee(currentUser, pageable);
+      return currentUserTasks.map(taskMapper::entityToDto);
     } else if (currentUser.getRole() == UserRole.ADMIN) {
       Page<Task> currentAdminTasks = taskRepository.findByAuthor(currentUser, pageable);
-      return currentAdminTasks.map(taskMapper::entityToDtoForList);
+      return currentAdminTasks.map(taskMapper::entityToDto);
     }
     return Page.empty();
   }
 
   @Override
   public TaskDto getTaskById(Long taskId) {
+    User currentUser = userDetailsService.getCurrentUser();
     Task task = taskRepository.findById(taskId)
         .orElseThrow(() -> new NotFoundException(TASK_NOT_FOUND.getMessage()));
-    return taskMapper.entityToDtoForList(task);
+    return taskMapper.entityToDto(task);
   }
 
   @Override
@@ -84,17 +85,16 @@ public class TaskServiceImpl implements TaskService {
 
     Task createdTask = taskRepository.save(task);
 
-    if (taskDTO.comment() != null) {
-      Comment comment = new Comment();
-      comment.setText(taskDTO.comment().text());
-      comment.setTask(createdTask);
-      comment.setUser(assignee);
-
-      commentRepository.save(comment);
-      createdTask.getComments().add(comment);
+    if (taskDTO.comments() != null && !taskDTO.comments().isEmpty()) {
+      for (CommentDto commentDto : taskDTO.comments()) {
+        Comment comment = commentMapper.dtoToEntity(commentDto);
+        comment.setTask(createdTask);
+        commentRepository.save(comment);
+        createdTask.getComments().add(comment);
+      }
     }
 
-    return taskMapper.entityToDtoForCreation(createdTask);
+    return taskMapper.entityToDto(createdTask);
   }
 
   @Override
@@ -134,24 +134,27 @@ public class TaskServiceImpl implements TaskService {
       }
     }
 
-    CommentDto newCommentDto = null;
-    if (taskDto.comment() != null) {
-      Comment comment = commentMapper.dtoToEntity(taskDto.comment());
-      comment.setTask(task);
-      comment.setUser(currentUser);
-      task.getComments().add(comment);
-      commentRepository.save(comment);
-      newCommentDto = commentMapper.entityToDTO(comment);
+    if (taskDto.comments() != null && !taskDto.comments().isEmpty()) {
+      for (CommentDto commentDto : taskDto.comments()) {
+        Comment comment = commentMapper.dtoToEntity(commentDto);
+        comment.setTask(task);
+        comment.setUser(currentUser);
+        task.getComments().add(comment);
+        commentRepository.save(comment);
+      }
     }
 
     Task updatedTask = taskRepository.save(task);
+
     return TaskDto.builder()
         .header(updatedTask.getHeader())
         .description(updatedTask.getDescription())
         .status(updatedTask.getStatus())
         .priority(updatedTask.getTaskPriority())
         .assignee(userMapper.entityToDto(updatedTask.getAssignee()))
-        .comment(newCommentDto)
+        .comments(updatedTask.getComments().stream()
+            .map(commentMapper::entityToDTO)
+            .collect(Collectors.toList()))
         .build();
   }
 

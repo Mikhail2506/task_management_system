@@ -4,10 +4,10 @@ import by.toukachmikhail.taskmanagementsystem.enums.TaskPriority;
 import by.toukachmikhail.taskmanagementsystem.enums.TaskStatus;
 import by.toukachmikhail.taskmanagementsystem.validators.taskspriority.ValidTaskPriority;
 import by.toukachmikhail.taskmanagementsystem.validators.taskstatus.ValidTaskStatus;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import java.util.Collections;
 import java.util.List;
 import lombok.Builder;
 
@@ -29,13 +29,19 @@ public record TaskDto(
     TaskPriority priority,
 
     UserDto assignee,
-
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    CommentDto comment,
+//
+//    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+//    CommentDto comment,
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     List<CommentDto> comments
 
 ) {
+
+  public TaskDto {
+    if (comments == null) {
+      comments = Collections.emptyList(); // или new ArrayList<>()
+    }
+  }
 
 }

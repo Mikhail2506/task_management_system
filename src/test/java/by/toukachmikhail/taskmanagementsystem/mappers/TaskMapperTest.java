@@ -28,6 +28,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+
 @ExtendWith(MockitoExtension.class)
 public class TaskMapperTest {
 
@@ -43,7 +44,6 @@ public class TaskMapperTest {
   @InjectMocks
   private TaskMapper taskMapper;
 
-
   private Task task;
   private TaskDto taskDto;
   private User user;
@@ -54,6 +54,7 @@ public class TaskMapperTest {
   @BeforeEach
   void setUp() {
     user = new User();
+    user.setUsername("Mikl");
     user.setEmail("mikl@mail.ru");
 
     userDto = new UserDto("Mikl", "mikl@mail.ru", UserRole.USER);
@@ -62,27 +63,52 @@ public class TaskMapperTest {
     comment.setId(1L);
     comment.setText("Text");
 
-    task = new Task();
-    task.setHeader("Header");
-    task.setDescription("Description");
-    task.setStatus(TaskStatus.FINISHED);
-    task.setTaskPriority(TaskPriority.HIGH);
-    task.setAssignee(user);
-    task.setComments(Collections.singletonList(comment));
+    task = Task.builder()
+        .header("Header")
+        .description("Description")
+        .status(TaskStatus.FINISHED)
+        .taskPriority(TaskPriority.HIGH)
+        .assignee(user)
+        .comments(Collections.singletonList(comment))
+        .build();
 
     commentDto = new CommentDto("Text");
 
-    taskDto = new TaskDto("Header",
-        "Description", TaskStatus.FINISHED, TaskPriority.HIGH, userDto, commentDto, null);
-
+    taskDto = TaskDto.builder()
+        .header("Header")
+        .description("Description")
+        .status(TaskStatus.FINISHED)
+        .priority(TaskPriority.HIGH)
+        .assignee(userDto)
+        .comments(List.of(commentDto))
+        .build();
   }
 
   @Test
-  void testEntityToDtoForList(){
+  void entityToDtoForCreationWhenMappedCorrectly() {
     when(userMapper.entityToDto(user)).thenReturn(userDto);
     when(commentMapper.entityToDTO(comment)).thenReturn(commentDto);
 
-    TaskDto result = taskMapper.entityToDtoForList(task);
+    TaskDto result = taskMapper.entityToDto(task);
+
+    assertNotNull(result);
+    assertEquals(task.getHeader(), result.header());
+    assertEquals(task.getDescription(), result.description());
+    assertEquals(task.getStatus(), result.status());
+    assertEquals(task.getTaskPriority(), result.priority());
+    assertEquals(userDto, result.assignee());
+    assertEquals(List.of(commentDto), result.comments());
+    verify(userMapper).entityToDto(user);
+    verify(commentMapper).entityToDTO(comment);
+  }
+
+  @Test
+  void entityToDtoForListWhenMappedCorrectly() {
+    when(userMapper.entityToDto(user)).thenReturn(userDto);
+    when(commentMapper.entityToDTO(comment)).thenReturn(commentDto);
+
+    TaskDto result = taskMapper.entityToDto(task);
+
     assertNotNull(result);
     assertEquals(task.getHeader(), result.header());
     assertEquals(task.getDescription(), result.description());
@@ -94,11 +120,10 @@ public class TaskMapperTest {
 
     verify(userMapper).entityToDto(user);
     verify(commentMapper).entityToDTO(comment);
-
   }
 
   @Test
-  void testDtoToEntity() {
+  void dtoToEntityWhenMappedCorrectly() {
     when(userRepository.findByEmail(userDto.email())).thenReturn(Optional.of(user));
     when(commentMapper.dtoToEntity(commentDto)).thenReturn(comment);
 
@@ -118,7 +143,7 @@ public class TaskMapperTest {
   }
 
   @Test
-  void testDtoToEntityWhenAssigneeNotFound() {
+  void dtoToEntity_ShouldThrowExceptionWhenAssigneeNotFound() {
     when(userRepository.findByEmail(userDto.email())).thenReturn(Optional.empty());
 
     NotFoundException exception = assertThrows(NotFoundException.class, () -> {

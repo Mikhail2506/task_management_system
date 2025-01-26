@@ -1,7 +1,5 @@
 package by.toukachmikhail.taskmanagementsystem.entities;
 
-import static by.toukachmikhail.taskmanagementsystem.enums.UserRole.USER;
-
 import by.toukachmikhail.taskmanagementsystem.enums.UserRole;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
