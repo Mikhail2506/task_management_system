@@ -11,7 +11,6 @@ import by.toukachmikhail.taskmanagementsystem.exception_handling.exception.NotFo
 import by.toukachmikhail.taskmanagementsystem.services.UserService;
 import by.toukachmikhail.taskmanagementsystem.utils.jwt.JwtTokenUtils;
 import jakarta.validation.Valid;
-import java.security.Principal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +19,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,7 +36,7 @@ public class AuthControllerImpl implements AuthController {
 
   @Override
   @PostMapping("/auth")
-  public ResponseEntity<?> createAuthToken(@RequestBody JwtRequestDto authRequest) {
+  public ResponseEntity<JwtResponseDto> createAuthToken(@RequestBody JwtRequestDto authRequest) {
     try {
       authenticationManager.authenticate(
           new UsernamePasswordAuthenticationToken(authRequest.email(), authRequest.password()));
@@ -60,17 +58,4 @@ public class AuthControllerImpl implements AuthController {
     return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
   }
 
-  @Override
-  @GetMapping("/admin")
-  public String adminData() {
-
-    return "Admin data";
-  }
-
-  @Override
-  @GetMapping("/info")
-  public String userData(Principal principal) {
-
-    return principal.getName();
-  }
 }

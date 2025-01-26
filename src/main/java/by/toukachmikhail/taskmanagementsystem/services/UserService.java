@@ -4,6 +4,7 @@ import by.toukachmikhail.taskmanagementsystem.dto.RegistrationUserDto;
 import by.toukachmikhail.taskmanagementsystem.dto.UserDto;
 import by.toukachmikhail.taskmanagementsystem.entities.User;
 import java.util.List;
+import org.springframework.data.domain.Page;
 
 public interface UserService  {
 
@@ -11,7 +12,8 @@ public interface UserService  {
 
   UserDto createNewUser(RegistrationUserDto registrationUserdto);
 
-  List<UserDto> getAllUsers();
+
+  Page<UserDto> getAllUsers(int page, int size, String sortBy, String direction);
 
   UserDto getUserById(Long userId);
 

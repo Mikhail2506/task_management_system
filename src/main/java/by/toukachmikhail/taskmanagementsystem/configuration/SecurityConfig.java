@@ -46,10 +46,10 @@ public class SecurityConfig {
         .exceptionHandling(exception -> exception
             .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
             .accessDeniedHandler((request, response, accessDeniesException) -> {
-                  response.setStatus(HttpStatus.FORBIDDEN.value());
-                  response.getWriter()
-                      .write("Access denied: You do not have permission to access this resource.");
-                })
+              response.setStatus(HttpStatus.FORBIDDEN.value());
+              response.getWriter()
+                  .write("Access denied: You do not have permission to access this resource.");
+            })
         )
         .addFilterBefore(jwtRequestFilter,
             UsernamePasswordAuthenticationFilter.class);

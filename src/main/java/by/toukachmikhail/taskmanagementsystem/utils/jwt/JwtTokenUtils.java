@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 public class JwtTokenUtils {
 
   @Value("${jwt.secret}")
-  private String secret;
+  private String jwtSecret;
 
   @Value("${jwt.lifetime}")
   private Duration jwtLifeTime;
@@ -47,7 +47,7 @@ public class JwtTokenUtils {
   }
 
   private SecretKey getSigningKey() {
-    return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+    return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
   }
 
   public String getEmail(String token) {

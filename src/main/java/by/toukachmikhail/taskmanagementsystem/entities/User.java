@@ -1,5 +1,7 @@
 package by.toukachmikhail.taskmanagementsystem.entities;
 
+import static by.toukachmikhail.taskmanagementsystem.enums.UserRole.USER;
+
 import by.toukachmikhail.taskmanagementsystem.enums.UserRole;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -51,7 +53,7 @@ public class User {
   @OneToMany(mappedBy = "assignee", cascade = CascadeType.REMOVE)
   private List<Task> tasks;
 
-  @Enumerated(EnumType.STRING) // Храним роль как строку в базе данных
+  @Enumerated(EnumType.STRING)
   @Column(name = "role", nullable = false)
   private UserRole role;
 

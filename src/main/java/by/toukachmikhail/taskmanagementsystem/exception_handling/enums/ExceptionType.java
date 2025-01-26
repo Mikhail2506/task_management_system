@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum ExceptionType {
   BAD_REQUEST(HttpStatus.BAD_REQUEST,
-      "Некорректный запрос. Убедитесь, что адрес указан верно и попробуйте еще раз."),
+      "Некорректный запрос."),
   FORBIDDEN(HttpStatus.FORBIDDEN,
       "Запрещено. Отсутствуют права доступа к содержимому."),
   NOT_FOUND(HttpStatus.NOT_FOUND,

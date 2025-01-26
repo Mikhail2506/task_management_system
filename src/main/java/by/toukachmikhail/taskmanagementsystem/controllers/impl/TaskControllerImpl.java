@@ -2,6 +2,7 @@ package by.toukachmikhail.taskmanagementsystem.controllers.impl;
 
 import by.toukachmikhail.taskmanagementsystem.controllers.TaskController;
 import by.toukachmikhail.taskmanagementsystem.dto.TaskDto;
+import by.toukachmikhail.taskmanagementsystem.dto.UserDto;
 import by.toukachmikhail.taskmanagementsystem.entities.User;
 import by.toukachmikhail.taskmanagementsystem.services.TaskService;
 import by.toukachmikhail.taskmanagementsystem.services.impl.UserDetailsServiceImpl;
@@ -9,9 +10,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -35,21 +33,19 @@ public class TaskControllerImpl implements TaskController {
 
   private final TaskService taskService;
   private final UserDetailsServiceImpl userDetailsService;
-  private final PagedResourcesAssembler<TaskDto> pagedResourcesAssembler;
 
   @Override
   @GetMapping
-  @PreAuthorize("hasAuthority('ADMIN')")
-  public ResponseEntity<PagedModel<EntityModel<TaskDto>>> getAllTasks(
+  @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+  public ResponseEntity<Page<TaskDto>> getAllTasks(
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size,
       @RequestParam(defaultValue = "id") String sortBy,
       @RequestParam(defaultValue = "asc") String direction) {
     Page<TaskDto> tasksDtoList = taskService.getAllTasks(page, size, sortBy, direction);
-    PagedModel<EntityModel<TaskDto>> pagedModel = pagedResourcesAssembler.toModel(tasksDtoList);
     return ResponseEntity.ok()
         .contentType(MediaType.APPLICATION_JSON)
-        .body(pagedModel);
+        .body(tasksDtoList);
   }
 
   @Override
@@ -57,21 +53,6 @@ public class TaskControllerImpl implements TaskController {
   public ResponseEntity<TaskDto> getTaskById(@PathVariable("task_id") Long taskId) {
     TaskDto taskDto = taskService.getTaskById(taskId);
     return new ResponseEntity<>(taskDto, HttpStatus.OK);
-  }
-
-  @Override
-  @GetMapping("/assignee/{assigneeId}")
-  @PreAuthorize("hasAuthority('ADMIN')")
-  public ResponseEntity<PagedModel<EntityModel<TaskDto>>> getTasksByAssignee(
-      @PathVariable Long assigneeId,
-      @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "10") int size,
-      @RequestParam(defaultValue = "id") String sortBy,
-      @RequestParam(defaultValue = "asc") String direction) {
-    Page<TaskDto> taskDtos = taskService.getTasksByAssignee(assigneeId, page, size, sortBy,
-        direction);
-    PagedModel<EntityModel<TaskDto>> pagedModel = pagedResourcesAssembler.toModel(taskDtos);
-    return new ResponseEntity<>(pagedModel, HttpStatus.OK);
   }
 
   @Override
@@ -85,7 +66,7 @@ public class TaskControllerImpl implements TaskController {
   @Override
   @PutMapping("/{taskId}")
   @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-  public ResponseEntity<TaskDto> updateTask(@Valid @PathVariable Long taskId,
+  public ResponseEntity<TaskDto> updateTask(@PathVariable Long taskId,
       @RequestBody TaskDto taskDto) {
     User currentUser = userDetailsService.getCurrentUser();
     TaskDto updatedTaskDTO = taskService.updateTask(taskId, taskDto, currentUser);
@@ -95,7 +76,8 @@ public class TaskControllerImpl implements TaskController {
   @Override
   @DeleteMapping("/{taskId}")
   @PreAuthorize("hasAuthority('ADMIN')")
-  public ResponseEntity<Void> deleteTask(@Valid @PathVariable Long taskId) {
+  public ResponseEntity<Void> deleteTask(@PathVariable Long taskId) {
+    taskService.deleteTask(taskId);
     return new ResponseEntity<>(HttpStatus.OK);
   }
 }

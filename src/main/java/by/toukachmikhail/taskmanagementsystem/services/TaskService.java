@@ -14,11 +14,11 @@ public interface TaskService {
   TaskDto getTaskById(Long taskId);
 
 
-  Page<TaskDto> getTasksByAuthor(Long authorId, int page, int size, String sortBy,
-      String direction);
-
-  Page<TaskDto> getTasksByAssignee(Long assigneeId, int page, int size, String sortBy,
-      String direction);
+//  Page<TaskDto> getTasksByAuthor(Long authorId, int page, int size, String sortBy,
+//      String direction);
+//
+//  Page<TaskDto> getTasksByAssignee(Long assigneeId, int page, int size, String sortBy,
+//      String direction);
 
   @Transactional
   TaskDto createTask(TaskDto taskDTO) throws NotFoundException;

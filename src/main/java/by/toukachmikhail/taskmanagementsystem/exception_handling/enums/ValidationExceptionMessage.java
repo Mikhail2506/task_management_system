@@ -6,10 +6,10 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum ValidationExceptionMessage {
-  TASK_STATUS_NULL("Task Status cannot be null"),
-  TASK_STATUS_ERROR("Invalid TaskStatus. Only WAITING, PROCESSING, FINISHED are allowed"),
-  TASK_PRIORITY_NULL("Task Priority cannot be null"),
-  TASK_PRIORITY_ERROR("Invalid Task Priority. Only HIGH, MIDDLE, LOW are allowed"),
-  VERIFY_PASSWORD_MATCHING("Password and confirmPassword do not matches");
+  TASK_STATUS_NULL("Статус задачи не может быть null"),
+  TASK_STATUS_ERROR("Некоректный статус задачи. Только WAITING, PROCESSING, FINISHED разрешены"),
+  TASK_PRIORITY_NULL("Приоритете задачи не может быть null"),
+  TASK_PRIORITY_ERROR("Некорректныф приоритет задачи. Только HIGH, MIDDLE, LOW разрешены"),
+  VERIFY_PASSWORD_MATCHING("Password and confirmPassword не совпадают");
   private final String message;
 }

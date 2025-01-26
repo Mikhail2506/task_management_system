@@ -5,6 +5,7 @@ import by.toukachmikhail.taskmanagementsystem.enums.TaskStatus;
 import by.toukachmikhail.taskmanagementsystem.validators.taskspriority.ValidTaskPriority;
 import by.toukachmikhail.taskmanagementsystem.validators.taskstatus.ValidTaskStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
@@ -27,14 +28,14 @@ public record TaskDto(
     @ValidTaskPriority
     TaskPriority priority,
 
-    UserDto author,
-
     UserDto assignee,
 
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     CommentDto comment,
 
-    @JsonIgnore
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     List<CommentDto> comments
+
 ) {
 
 }

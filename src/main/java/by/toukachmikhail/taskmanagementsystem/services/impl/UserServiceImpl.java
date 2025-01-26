@@ -5,7 +5,6 @@ import static by.toukachmikhail.taskmanagementsystem.exception_handling.enums.No
 
 import by.toukachmikhail.taskmanagementsystem.dto.RegistrationUserDto;
 import by.toukachmikhail.taskmanagementsystem.dto.UserDto;
-import by.toukachmikhail.taskmanagementsystem.entities.Task;
 import by.toukachmikhail.taskmanagementsystem.entities.User;
 import by.toukachmikhail.taskmanagementsystem.enums.UserRole;
 import by.toukachmikhail.taskmanagementsystem.exception_handling.exception.ForbiddenException;
@@ -14,10 +13,11 @@ import by.toukachmikhail.taskmanagementsystem.mappers.UserMapper;
 import by.toukachmikhail.taskmanagementsystem.repositories.TaskRepository;
 import by.toukachmikhail.taskmanagementsystem.repositories.UserRepository;
 import by.toukachmikhail.taskmanagementsystem.services.UserService;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -55,11 +55,11 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public List<UserDto> getAllUsers() {
-    List<User> users = userRepository.findAll();
-    return users.stream()
-        .map(userMapper::entityToDto)
-        .collect(Collectors.toList());
+  public Page<UserDto> getAllUsers(int page, int size, String sortBy, String direction) {
+    Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
+    Pageable pageable = PageRequest.of(page, size, sort);
+    return userRepository.findAll(pageable)
+        .map(userMapper::entityToDto);
   }
 
   @Override
