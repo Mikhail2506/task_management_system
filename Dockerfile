@@ -1,9 +1,9 @@
 
-FROM openjdk:17-jdk-alpine
+FROM eclipse-temurin:17-jdk-alpine
 
 WORKDIR /app
 
-COPY target/taskmanagementsystem-*.jar app.jar
+COPY build/libs/taskmanagementsystem-*.jar app.jar
 
 EXPOSE 8080
 

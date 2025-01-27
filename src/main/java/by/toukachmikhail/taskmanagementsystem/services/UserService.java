@@ -11,7 +11,6 @@ public interface UserService {
 
   UserDto createNewUser(RegistrationUserDto registrationUserdto);
 
-
   Page<UserDto> getAllUsers(int page, int size, String sortBy, String direction);
 
   UserDto getUserById(Long userId);

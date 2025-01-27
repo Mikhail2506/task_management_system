@@ -89,6 +89,7 @@ public class TaskServiceImpl implements TaskService {
       for (CommentDto commentDto : taskDTO.comments()) {
         Comment comment = commentMapper.dtoToEntity(commentDto);
         comment.setTask(createdTask);
+        comment.setUser(assignee);
         commentRepository.save(comment);
         createdTask.getComments().add(comment);
       }

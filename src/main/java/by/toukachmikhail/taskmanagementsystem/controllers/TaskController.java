@@ -39,6 +39,12 @@ public interface TaskController {
               schema = @Schema(implementation = Page.class))
       ),
       @ApiResponse(
+          responseCode = "401",
+          description = "Unauthorized",
+          content = @Content(
+              mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponseDTO.class))),
+      @ApiResponse(
           responseCode = "403",
           description = "Forbidden - User does not have ADMIN role",
           content = @Content(schema = @Schema(hidden = true))
@@ -78,6 +84,12 @@ public interface TaskController {
               schema = @Schema(implementation = TaskDto.class))
       ),
       @ApiResponse(
+          responseCode = "401",
+          description = "Unauthorized",
+          content = @Content(
+              mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponseDTO.class))),
+      @ApiResponse(
           responseCode = "404",
           description = "Task not found",
           content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class))
@@ -111,6 +123,12 @@ public interface TaskController {
           description = "Bad Request - Invalid input data",
           content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class))
       ),
+      @ApiResponse(
+          responseCode = "401",
+          description = "Unauthorized",
+          content = @Content(
+              mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponseDTO.class))),
       @ApiResponse(
           responseCode = "403",
           description = "Forbidden - User does not have ADMIN role",
@@ -152,6 +170,12 @@ public interface TaskController {
           content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class))
       ),
       @ApiResponse(
+          responseCode = "401",
+          description = "Unauthorized",
+          content = @Content(
+              mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponseDTO.class))),
+      @ApiResponse(
           responseCode = "403",
           description = "Forbidden - User does not have required permissions",
           content = @Content(schema = @Schema(hidden = true))
@@ -187,6 +211,13 @@ public interface TaskController {
           description = "Task deleted successfully",
           content = @Content(schema = @Schema(hidden = true))
       ),
+      @ApiResponse(
+          responseCode = "401",
+          description = "Unauthorized",
+          content = @Content(
+              mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponseDTO.class))),
+
       @ApiResponse(
           responseCode = "403",
           description = "Forbidden - User does not have ADMIN role",

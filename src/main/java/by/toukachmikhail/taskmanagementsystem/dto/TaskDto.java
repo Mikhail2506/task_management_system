@@ -7,6 +7,7 @@ import by.toukachmikhail.taskmanagementsystem.validators.taskstatus.ValidTaskSta
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import lombok.Builder;
@@ -29,9 +30,6 @@ public record TaskDto(
     TaskPriority priority,
 
     UserDto assignee,
-//
-//    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-//    CommentDto comment,
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     List<CommentDto> comments
@@ -40,7 +38,7 @@ public record TaskDto(
 
   public TaskDto {
     if (comments == null) {
-      comments = Collections.emptyList(); // или new ArrayList<>()
+      comments = new ArrayList<>();
     }
   }
 

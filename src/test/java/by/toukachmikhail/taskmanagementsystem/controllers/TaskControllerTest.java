@@ -5,7 +5,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -25,7 +24,7 @@ import by.toukachmikhail.taskmanagementsystem.enums.UserRole;
 import by.toukachmikhail.taskmanagementsystem.services.TaskService;
 import by.toukachmikhail.taskmanagementsystem.services.impl.UserDetailsServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -38,6 +37,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 @ExtendWith(MockitoExtension.class)
@@ -61,28 +61,39 @@ public class TaskControllerTest {
   void setUp() {
     mockMvc = MockMvcBuilders.standaloneSetup(taskController).build();
     objectMapper = new ObjectMapper();
-    userDto = new UserDto("Mikl", "mikl@mail.ru", UserRole.USER);
-    commentDto = new CommentDto("Text");
+    userDto = UserDto.builder()
+        .username("Mikl")
+        .email("mikl@mail.ru")
+        .role(UserRole.ADMIN)
+        .build();
+    commentDto = CommentDto.builder()
+        .text("Text")
+        .build();
   }
 
   @Test
   @Disabled
-  void getAllTasks_ShouldReturnPageOfTasks() throws Exception {
+  void getAllTasksShouldReturnPageOfTasks() throws Exception {
 
+    List<CommentDto> commentsList = new ArrayList<>();
+    commentsList.add(CommentDto.builder().text("commentDto").build());
     TaskDto taskDto = TaskDto.builder()
         .header("Header")
         .description("Description")
         .status(TaskStatus.FINISHED)
         .priority(TaskPriority.HIGH)
-        .assignee(new UserDto("Mikl", "mikl@mail.ru", UserRole.USER))
-        .comments(List.of(commentDto))
+        .assignee(UserDto.builder().username("Max").email("Max@mail.ru").role(UserRole.USER).build())
+        .comments(commentsList)
         .build();
 
-    Page<TaskDto> taskPage = new PageImpl<>(Collections.singletonList(taskDto));
+    List<TaskDto> taskList = new ArrayList<>();
+    taskList.add(taskDto);
+    Page<TaskDto> taskPage = new PageImpl<>(taskList);
 
     System.out.println("Mocking taskService to return: " + taskPage);
 
-    when(taskService.getAllTasks(any(Integer.class), any(Integer.class), any(String.class), any(String.class)))
+    when(taskService.getAllTasks(any(Integer.class), any(Integer.class), any(String.class),
+        any(String.class)))
         .thenReturn(taskPage);
 
     System.out.println("Performing GET request to /api/v1/tasks...");
@@ -93,13 +104,13 @@ public class TaskControllerTest {
             .param("sortBy", "id")
             .param("direction", "asc")
             .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
+        .andExpect(MockMvcResultMatchers.status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.content[0].header").value("Header"))
         .andExpect(jsonPath("$.content[0].description").value("Description"))
         .andExpect(jsonPath("$.content[0].status").value("FINISHED"))
         .andExpect(jsonPath("$.content[0].priority").value("HIGH"))
-        .andExpect(jsonPath("$.content[0].assignee.username").value("Mikl"))
+        .andExpect(jsonPath("$.content[0].assignee.username").value("Max"))
         .andDo(result -> {
           System.out.println("Request result: " + result.getResponse().getContentAsString());
         });
@@ -125,7 +136,7 @@ public class TaskControllerTest {
         .andExpect(jsonPath("$.priority").value("HIGH"))
         .andExpect(jsonPath("$.assignee.username").value("Mikl"))
         .andExpect(jsonPath("$.assignee.email").value("mikl@mail.ru"))
-        .andExpect(jsonPath("$.assignee.role").value("USER"));
+        .andExpect(jsonPath("$.assignee.role").value("ADMIN"));
 
     verify(taskService).getTaskById(1L);
   }
@@ -134,7 +145,8 @@ public class TaskControllerTest {
   void createTaskShouldReturnCreatedTask() throws Exception {
 
     TaskDto taskDto = new TaskDto(
-        "Header", "Description", TaskStatus.FINISHED, TaskPriority.HIGH, userDto, List.of(commentDto)
+        "Header", "Description", TaskStatus.FINISHED, TaskPriority.HIGH, userDto,
+        List.of(commentDto)
     );
     when(taskService.createTask(taskDto)).thenReturn(taskDto);
 
@@ -148,8 +160,7 @@ public class TaskControllerTest {
         .andExpect(jsonPath("$.priority").value("HIGH"))
         .andExpect(jsonPath("$.assignee.username").value("Mikl"))
         .andExpect(jsonPath("$.assignee.email").value("mikl@mail.ru"))
-        .andExpect(jsonPath("$.assignee.role").value("USER"));
-
+        .andExpect(jsonPath("$.assignee.role").value("ADMIN"));
 
     verify(taskService).createTask(taskDto);
   }
@@ -168,7 +179,7 @@ public class TaskControllerTest {
 
     TaskDto taskDto = new TaskDto(
         "Updated Header", "Updated Description", TaskStatus.FINISHED, TaskPriority.HIGH,
-        currentUserDto,List.of(commentDto));
+        currentUserDto, List.of(commentDto));
 
     when(taskService.updateTask(
         eq(1L),
