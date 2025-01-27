@@ -2,7 +2,6 @@ package by.toukachmikhail.taskmanagementsystem.controllers.impl;
 
 import by.toukachmikhail.taskmanagementsystem.controllers.TaskController;
 import by.toukachmikhail.taskmanagementsystem.dto.TaskDto;
-import by.toukachmikhail.taskmanagementsystem.dto.UserDto;
 import by.toukachmikhail.taskmanagementsystem.entities.User;
 import by.toukachmikhail.taskmanagementsystem.services.TaskService;
 import by.toukachmikhail.taskmanagementsystem.services.impl.UserDetailsServiceImpl;

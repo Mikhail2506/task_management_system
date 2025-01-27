@@ -3,10 +3,9 @@ package by.toukachmikhail.taskmanagementsystem.services;
 import by.toukachmikhail.taskmanagementsystem.dto.RegistrationUserDto;
 import by.toukachmikhail.taskmanagementsystem.dto.UserDto;
 import by.toukachmikhail.taskmanagementsystem.entities.User;
-import java.util.List;
 import org.springframework.data.domain.Page;
 
-public interface UserService  {
+public interface UserService {
 
   User findByEmail(String username);
 

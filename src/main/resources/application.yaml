@@ -3,10 +3,12 @@ spring:
     name:
       taskmanagementsystem
   datasource:
+    datasource:
+      initialization-mode: always
     driver-class-name: org.postgresql.Driver
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/task_management}
-    username: ${DB_USER:postgres}
-    password: ${DB_PASSWORD:postgres}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/task_management}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
     hikari:
       maximum-pool-size: 10
   jpa:
@@ -14,17 +16,17 @@ spring:
     hibernate:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-      ddl-auto: update
+      ddl-auto: create
     show-sql: true
     properties:
       hibernate:
         default_schema: public
         current_session_context_class: org.springframework.orm.hibernate5.SpringSessionContext
-        show_sql: false
+        show_sql: true
         format_sql: true
 server:
   error:
-    include-stacktrace: never
+    include-stacktrace: on_param
 jwt:
   secret: your-256-bit-secret-1234567890abcdef1234567890abcdef
   lifetime: 50m

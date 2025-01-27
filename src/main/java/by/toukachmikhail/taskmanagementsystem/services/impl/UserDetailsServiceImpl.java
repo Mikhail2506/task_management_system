@@ -4,7 +4,6 @@ package by.toukachmikhail.taskmanagementsystem.services.impl;
 import static by.toukachmikhail.taskmanagementsystem.exception_handling.enums.NotFoundExceptionMessage.ASSIGNEE_NOT_FOUND;
 import static by.toukachmikhail.taskmanagementsystem.exception_handling.enums.UnauthorizedExceptionMessage.USER_NOT_AUTHENTICATED;
 
-import by.toukachmikhail.taskmanagementsystem.dto.UserDto;
 import by.toukachmikhail.taskmanagementsystem.entities.User;
 import by.toukachmikhail.taskmanagementsystem.exception_handling.exception.NotFoundException;
 import by.toukachmikhail.taskmanagementsystem.exception_handling.exception.UnauthorizedException;

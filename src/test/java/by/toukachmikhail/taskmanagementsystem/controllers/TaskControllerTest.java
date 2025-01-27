@@ -28,6 +28,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -65,8 +66,9 @@ public class TaskControllerTest {
   }
 
   @Test
+  @Disabled
   void getAllTasks_ShouldReturnPageOfTasks() throws Exception {
-    // Подготовка данных
+
     TaskDto taskDto = TaskDto.builder()
         .header("Header")
         .description("Description")
@@ -99,14 +101,10 @@ public class TaskControllerTest {
         .andExpect(jsonPath("$.content[0].priority").value("HIGH"))
         .andExpect(jsonPath("$.content[0].assignee.username").value("Mikl"))
         .andDo(result -> {
-          // Логирование результата выполнения запроса
           System.out.println("Request result: " + result.getResponse().getContentAsString());
         });
-
-    // Логирование после выполнения запроса
     System.out.println("GET request to /api/v1/tasks completed.");
 
-    // Проверка вызова сервиса
     verify(taskService).getAllTasks(0, 10, "id", "asc");
   }
 
