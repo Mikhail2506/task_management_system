@@ -7,10 +7,7 @@ import org.springframework.data.domain.Page;
 
 public interface UserService {
 
-  User findByEmail(String username);
-
   UserDto createNewUser(RegistrationUserDto registrationUserdto);
-
 
   Page<UserDto> getAllUsers(int page, int size, String sortBy, String direction);
 

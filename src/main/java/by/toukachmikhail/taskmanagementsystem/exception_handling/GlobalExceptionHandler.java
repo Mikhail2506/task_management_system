@@ -7,9 +7,11 @@ import static by.toukachmikhail.taskmanagementsystem.exception_handling.enums.Ex
 import static by.toukachmikhail.taskmanagementsystem.exception_handling.enums.ExceptionType.UNAUTHORIZED;
 import static by.toukachmikhail.taskmanagementsystem.exception_handling.enums.UnauthorizedExceptionMessage.TOKEN_HAS_EXPIRED;
 import static by.toukachmikhail.taskmanagementsystem.exception_handling.enums.UnauthorizedExceptionMessage.TOKEN_NOT_VALID;
+import static by.toukachmikhail.taskmanagementsystem.exception_handling.enums.UnauthorizedExceptionMessage.USER_NOT_AUTHENTICATED;
 import static by.toukachmikhail.taskmanagementsystem.exception_handling.enums.ValidationExceptionMessage.VERIFY_PASSWORD_MATCHING;
 
 import by.toukachmikhail.taskmanagementsystem.dto.ErrorResponseDTO;
+import by.toukachmikhail.taskmanagementsystem.exception_handling.enums.UnauthorizedExceptionMessage;
 import by.toukachmikhail.taskmanagementsystem.exception_handling.exception.BaseException;
 import by.toukachmikhail.taskmanagementsystem.exception_handling.exception.ForbiddenException;
 import by.toukachmikhail.taskmanagementsystem.exception_handling.exception.UnauthorizedException;
@@ -127,6 +129,14 @@ public class GlobalExceptionHandler {
 
     return buildResponseEntity(request, BAD_REQUEST.getHttpStatus(),
         VERIFY_PASSWORD_MATCHING.getMessage());
+  }
+
+  @ExceptionHandler(UnauthorizedException.class)
+  public ResponseEntity<ErrorResponseDTO> handleUnauthorizedException(
+      HttpServletRequest request, UnauthorizedExceptionMessage exception ) {
+
+    return buildResponseEntity(request, UNAUTHORIZED.getHttpStatus(),
+        USER_NOT_AUTHENTICATED.getMessage());
   }
 
   @ExceptionHandler(ConstraintViolationException.class)

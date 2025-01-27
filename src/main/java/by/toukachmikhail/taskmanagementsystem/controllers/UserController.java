@@ -42,6 +42,12 @@ public interface UserController {
                   mediaType = "application/json",
                   schema = @Schema(implementation = ErrorResponseDTO.class))),
           @ApiResponse(
+              responseCode = "401",
+              description = "Unauthorized",
+              content = @Content(
+                  mediaType = "application/json",
+                  schema = @Schema(implementation = ErrorResponseDTO.class))),
+          @ApiResponse(
               responseCode = "403",
               description = "Forbidden",
               content = @Content(
@@ -86,6 +92,12 @@ public interface UserController {
           @ApiResponse(
               responseCode = "400",
               description = "Bad Request",
+              content = @Content(
+                  mediaType = "application/json",
+                  schema = @Schema(implementation = ErrorResponseDTO.class))),
+          @ApiResponse(
+              responseCode = "401",
+              description = "Unauthorized",
               content = @Content(
                   mediaType = "application/json",
                   schema = @Schema(implementation = ErrorResponseDTO.class))),
@@ -135,6 +147,12 @@ public interface UserController {
                   mediaType = "application/json",
                   schema = @Schema(implementation = ErrorResponseDTO.class))),
           @ApiResponse(
+              responseCode = "401",
+              description = "Unauthorized",
+              content = @Content(
+                  mediaType = "application/json",
+                  schema = @Schema(implementation = ErrorResponseDTO.class))),
+          @ApiResponse(
               responseCode = "403",
               description = "Forbidden",
               content = @Content(
@@ -177,6 +195,12 @@ public interface UserController {
           @ApiResponse(
               responseCode = "400",
               description = "Bad Request",
+              content = @Content(
+                  mediaType = "application/json",
+                  schema = @Schema(implementation = ErrorResponseDTO.class))),
+          @ApiResponse(
+              responseCode = "401",
+              description = "Unauthorized",
               content = @Content(
                   mediaType = "application/json",
                   schema = @Schema(implementation = ErrorResponseDTO.class))),

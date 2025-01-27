@@ -11,6 +11,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import by.toukachmikhail.taskmanagementsystem.dto.CommentDto;
+import by.toukachmikhail.taskmanagementsystem.dto.CustomPageResponse;
 import by.toukachmikhail.taskmanagementsystem.dto.TaskDto;
 import by.toukachmikhail.taskmanagementsystem.dto.UserDto;
 import by.toukachmikhail.taskmanagementsystem.entities.Comment;
@@ -37,7 +38,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -129,10 +129,10 @@ public class TaskServiceImplTest {
         .thenReturn(new PageImpl<>(List.of(task)));
     when(taskMapper.entityToDto(task)).thenReturn(taskDto);
 
-    Page<TaskDto> result = taskService.getAllTasks(0, 10, "id", "asc");
+    CustomPageResponse<TaskDto> result = taskService.getAllTasks(0, 10, "id", "asc");
 
     assertNotNull(result);
-    assertEquals(1, result.getTotalElements());
+    assertEquals(1, result.totalElements());
     verify(taskRepository, times(1)).findByAssignee(user, PageRequest.of(0, 10, Sort.by("id")));
   }
 
@@ -144,15 +144,15 @@ public class TaskServiceImplTest {
         .thenReturn(new PageImpl<>(List.of(task)));
     when(taskMapper.entityToDto(task)).thenReturn(taskDto);
 
-    Page<TaskDto> result = taskService.getAllTasks(0, 10, "id", "asc");
+    CustomPageResponse<TaskDto> result = taskService.getAllTasks(0, 10, "id", "asc");
 
     assertNotNull(result);
-    assertEquals(1, result.getTotalElements());
+    assertEquals(1, result.totalElements());
     verify(taskRepository, times(1)).findByAuthor(admin, PageRequest.of(0, 10, Sort.by("id")));
   }
 
   @Test
-  void getTaskByIdWhenWhenTaskExists() {
+  void getTaskByIdWhenTaskExists() {
 
     when(taskRepository.findById(1L)).thenReturn(Optional.of(task));
     when(taskMapper.entityToDto(task)).thenReturn(taskDto);
@@ -236,7 +236,7 @@ public class TaskServiceImplTest {
         .status(TaskStatus.FINISHED)
         .priority(TaskPriority.HIGH)
         .assignee(userMapper.entityToDto(user))
-        .comments(List.of(commentDto)) // Use the initialized commentDto
+        .comments(List.of(commentDto))
         .build();
 
     TaskDto result = taskService.updateTask(1L, updateDto, admin);

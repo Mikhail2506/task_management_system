@@ -1,8 +1,8 @@
 package by.toukachmikhail.taskmanagementsystem.validators.taskstatus;
 
-import static by.toukachmikhail.taskmanagementsystem.exception_handling.enums.ValidationExceptionMessage.TASK_STATUS_ERROR;import static by.toukachmikhail.taskmanagementsystem.exception_handling.enums.ValidationExceptionMessage.TASK_STATUS_NULL;
+import static by.toukachmikhail.taskmanagementsystem.exception_handling.enums.ValidationExceptionMessage.TASK_STATUS_ERROR;
 
-import by.toukachmikhail.taskmanagementsystem.enums.TaskStatus;;
+import by.toukachmikhail.taskmanagementsystem.enums.TaskStatus;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import java.util.Arrays;

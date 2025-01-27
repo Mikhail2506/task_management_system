@@ -21,7 +21,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -31,12 +30,6 @@ public class UserServiceImpl implements UserService {
   private final PasswordEncoder passwordEncoder;
   private final TaskRepository taskRepository;
 
-
-  @Override
-  public User findByEmail(String email) {
-    return userRepository.findByEmail(email)
-        .orElseThrow(() -> new NotFoundException(ASSIGNEE_NOT_FOUND.getMessage()));
-  }
 
   @Override
   public UserDto createNewUser(RegistrationUserDto registrationUserDto) {

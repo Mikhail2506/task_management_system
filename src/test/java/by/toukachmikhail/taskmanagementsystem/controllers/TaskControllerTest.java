@@ -2,10 +2,10 @@ package by.toukachmikhail.taskmanagementsystem.controllers;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -16,6 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import by.toukachmikhail.taskmanagementsystem.controllers.impl.TaskControllerImpl;
 import by.toukachmikhail.taskmanagementsystem.dto.CommentDto;
+import by.toukachmikhail.taskmanagementsystem.dto.CustomPageResponse;
 import by.toukachmikhail.taskmanagementsystem.dto.TaskDto;
 import by.toukachmikhail.taskmanagementsystem.dto.UserDto;
 import by.toukachmikhail.taskmanagementsystem.entities.User;
@@ -28,16 +29,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 @ExtendWith(MockitoExtension.class)
@@ -53,6 +57,7 @@ public class TaskControllerTest {
   private TaskControllerImpl taskController;
 
   private MockMvc mockMvc;
+
   private ObjectMapper objectMapper;
   private UserDto userDto;
   private CommentDto commentDto;
@@ -61,31 +66,26 @@ public class TaskControllerTest {
   void setUp() {
     mockMvc = MockMvcBuilders.standaloneSetup(taskController).build();
     objectMapper = new ObjectMapper();
-    userDto = new UserDto("Mikl", "mikl@mail.ru", UserRole.USER);
-    commentDto = new CommentDto("Text");
+    userDto = UserDto.builder()
+        .username("Mikl")
+        .email("mikl@mail.ru")
+        .role(UserRole.ADMIN)
+        .build();
+    commentDto = CommentDto.builder()
+        .text("Text")
+        .build();
   }
 
   @Test
-  @Disabled
-  void getAllTasks_ShouldReturnPageOfTasks() throws Exception {
+  public void testGetAllTasks() throws Exception {
 
-    TaskDto taskDto = TaskDto.builder()
-        .header("Header")
-        .description("Description")
-        .status(TaskStatus.FINISHED)
-        .priority(TaskPriority.HIGH)
-        .assignee(new UserDto("Mikl", "mikl@mail.ru", UserRole.USER))
-        .comments(List.of(commentDto))
-        .build();
+    TaskDto taskDto = new TaskDto("Header", "Task 1", TaskStatus.FINISHED, TaskPriority.HIGH,
+        userDto, List.of(commentDto));
+    Page<TaskDto> taskPage = new PageImpl<>(Collections.singletonList(taskDto),
+        PageRequest.of(0, 10), 1);
 
-    Page<TaskDto> taskPage = new PageImpl<>(Collections.singletonList(taskDto));
-
-    System.out.println("Mocking taskService to return: " + taskPage);
-
-    when(taskService.getAllTasks(any(Integer.class), any(Integer.class), any(String.class), any(String.class)))
-        .thenReturn(taskPage);
-
-    System.out.println("Performing GET request to /api/v1/tasks...");
+    CustomPageResponse<TaskDto> response = new CustomPageResponse<>(taskPage);
+    when(taskService.getAllTasks(0, 10, "id", "asc")).thenReturn(response);
 
     mockMvc.perform(get("/api/v1/tasks")
             .param("page", "0")
@@ -96,16 +96,10 @@ public class TaskControllerTest {
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.content[0].header").value("Header"))
-        .andExpect(jsonPath("$.content[0].description").value("Description"))
-        .andExpect(jsonPath("$.content[0].status").value("FINISHED"))
-        .andExpect(jsonPath("$.content[0].priority").value("HIGH"))
-        .andExpect(jsonPath("$.content[0].assignee.username").value("Mikl"))
-        .andDo(result -> {
-          System.out.println("Request result: " + result.getResponse().getContentAsString());
-        });
-    System.out.println("GET request to /api/v1/tasks completed.");
-
-    verify(taskService).getAllTasks(0, 10, "id", "asc");
+        .andExpect(jsonPath("$.content[0].description").value("Task 1"))
+        .andExpect(jsonPath("$.currentPage").value(0))
+        .andExpect(jsonPath("$.totalPages").value(1))
+        .andExpect(jsonPath("$.totalElements").value(1));
   }
 
   @Test
@@ -125,7 +119,7 @@ public class TaskControllerTest {
         .andExpect(jsonPath("$.priority").value("HIGH"))
         .andExpect(jsonPath("$.assignee.username").value("Mikl"))
         .andExpect(jsonPath("$.assignee.email").value("mikl@mail.ru"))
-        .andExpect(jsonPath("$.assignee.role").value("USER"));
+        .andExpect(jsonPath("$.assignee.role").value("ADMIN"));
 
     verify(taskService).getTaskById(1L);
   }
@@ -134,9 +128,12 @@ public class TaskControllerTest {
   void createTaskShouldReturnCreatedTask() throws Exception {
 
     TaskDto taskDto = new TaskDto(
-        "Header", "Description", TaskStatus.FINISHED, TaskPriority.HIGH, userDto, List.of(commentDto)
+        "Header", "Description", TaskStatus.FINISHED, TaskPriority.HIGH, userDto,
+        List.of(commentDto)
     );
-    when(taskService.createTask(taskDto)).thenReturn(taskDto);
+
+    given(taskService.createTask(ArgumentMatchers.any())).willAnswer(
+        invocation -> invocation.getArgument(0));
 
     mockMvc.perform(post("/api/v1/tasks")
             .contentType(MediaType.APPLICATION_JSON)
@@ -148,8 +145,8 @@ public class TaskControllerTest {
         .andExpect(jsonPath("$.priority").value("HIGH"))
         .andExpect(jsonPath("$.assignee.username").value("Mikl"))
         .andExpect(jsonPath("$.assignee.email").value("mikl@mail.ru"))
-        .andExpect(jsonPath("$.assignee.role").value("USER"));
-
+        .andExpect(jsonPath("$.assignee.role").value("ADMIN"))
+        .andDo(MockMvcResultHandlers.print());
 
     verify(taskService).createTask(taskDto);
   }
@@ -168,7 +165,7 @@ public class TaskControllerTest {
 
     TaskDto taskDto = new TaskDto(
         "Updated Header", "Updated Description", TaskStatus.FINISHED, TaskPriority.HIGH,
-        currentUserDto,List.of(commentDto));
+        currentUserDto, List.of(commentDto));
 
     when(taskService.updateTask(
         eq(1L),

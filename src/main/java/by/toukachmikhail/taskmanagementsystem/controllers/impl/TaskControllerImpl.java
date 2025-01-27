@@ -1,6 +1,7 @@
 package by.toukachmikhail.taskmanagementsystem.controllers.impl;
 
 import by.toukachmikhail.taskmanagementsystem.controllers.TaskController;
+import by.toukachmikhail.taskmanagementsystem.dto.CustomPageResponse;
 import by.toukachmikhail.taskmanagementsystem.dto.TaskDto;
 import by.toukachmikhail.taskmanagementsystem.entities.User;
 import by.toukachmikhail.taskmanagementsystem.services.TaskService;
@@ -8,7 +9,6 @@ import by.toukachmikhail.taskmanagementsystem.services.impl.UserDetailsServiceIm
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -36,15 +36,15 @@ public class TaskControllerImpl implements TaskController {
   @Override
   @GetMapping
   @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-  public ResponseEntity<Page<TaskDto>> getAllTasks(
+  public ResponseEntity<CustomPageResponse<TaskDto>> getAllTasks(
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size,
       @RequestParam(defaultValue = "id") String sortBy,
       @RequestParam(defaultValue = "asc") String direction) {
-    Page<TaskDto> tasksDtoList = taskService.getAllTasks(page, size, sortBy, direction);
+    CustomPageResponse<TaskDto> response = taskService.getAllTasks(page, size, sortBy, direction);
     return ResponseEntity.ok()
         .contentType(MediaType.APPLICATION_JSON)
-        .body(tasksDtoList);
+        .body(response);
   }
 
   @Override

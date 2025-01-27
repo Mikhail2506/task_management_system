@@ -5,6 +5,7 @@ import static by.toukachmikhail.taskmanagementsystem.exception_handling.enums.No
 import static by.toukachmikhail.taskmanagementsystem.exception_handling.enums.NotFoundExceptionMessage.TASK_NOT_FOUND;
 
 import by.toukachmikhail.taskmanagementsystem.dto.CommentDto;
+import by.toukachmikhail.taskmanagementsystem.dto.CustomPageResponse;
 import by.toukachmikhail.taskmanagementsystem.dto.TaskDto;
 import by.toukachmikhail.taskmanagementsystem.entities.Comment;
 import by.toukachmikhail.taskmanagementsystem.entities.Task;
@@ -43,24 +44,27 @@ public class TaskServiceImpl implements TaskService {
   private final UserMapper userMapper;
 
   @Override
-  public Page<TaskDto> getAllTasks(int page, int size, String sortBy, String direction) {
+  public CustomPageResponse<TaskDto> getAllTasks(int page, int size, String sortBy,
+      String direction) {
     User currentUser = userDetailsService.getCurrentUser();
     Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
     Pageable pageable = PageRequest.of(page, size, sort);
 
+    Page<Task> taskpage;
     if (currentUser.getRole() == UserRole.USER) {
-      Page<Task> currentUserTasks = taskRepository.findByAssignee(currentUser, pageable);
-      return currentUserTasks.map(taskMapper::entityToDto);
+      taskpage = taskRepository.findByAssignee(currentUser, pageable);
     } else if (currentUser.getRole() == UserRole.ADMIN) {
-      Page<Task> currentAdminTasks = taskRepository.findByAuthor(currentUser, pageable);
-      return currentAdminTasks.map(taskMapper::entityToDto);
+      taskpage = taskRepository.findByAuthor(currentUser, pageable);
+    }else {
+      taskpage = Page.empty();
     }
-    return Page.empty();
+    Page<TaskDto> tasksDtoPage = taskpage.map(taskMapper::entityToDto);
+    return new CustomPageResponse<>(tasksDtoPage);
   }
 
   @Override
   public TaskDto getTaskById(Long taskId) {
-    User currentUser = userDetailsService.getCurrentUser();
+
     Task task = taskRepository.findById(taskId)
         .orElseThrow(() -> new NotFoundException(TASK_NOT_FOUND.getMessage()));
     return taskMapper.entityToDto(task);
@@ -89,6 +93,7 @@ public class TaskServiceImpl implements TaskService {
       for (CommentDto commentDto : taskDTO.comments()) {
         Comment comment = commentMapper.dtoToEntity(commentDto);
         comment.setTask(createdTask);
+        comment.setUser(assignee);
         commentRepository.save(comment);
         createdTask.getComments().add(comment);
       }
